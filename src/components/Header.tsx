@@ -43,7 +43,7 @@ function Header() {
         {/* Menu Dropdown */}
         {isMenuOpen && (
           <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-xl p-2 z-50 ring-2 ring-black ring-opacity-5">
-            <button className="w-full text-left px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 transition-colors">
+            <button className="w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 transition-colors">
               Đăng xuất
             </button>
           </div>

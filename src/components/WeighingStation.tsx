@@ -1,11 +1,67 @@
-function WeighingStation() {
+import React, { useState } from 'react';
+
   // Dữ liệu giả lập
-  const weightData = {
-    current: "0.0",
-    standard: "0.0",
-    deviation: "0%",
-    min: 0,
-    max: 0,
+  const testData = {
+    code: "12345",
+    name: "Phôi keo A",
+    solo: "Lô 1",
+    somay: "Máy 1",
+    weight: 55.0,
+    user: "Nguyễn Văn A",
+    time: "12:00 01/01/2025"
+  };
+
+  type WeighingData = typeof testData | null;
+
+function WeighingStation() {
+
+  // Sử dụng useState để quản lý dữ liệu
+  const [standardWeight, setStandardWeight] = useState(0.0);  //Lưu khối lượng tiêu chuẩn dưới dạng số (8.0 kg)
+  const [deviationPercent, setDeviationPercent] = useState(3); // Lưu chênh lệch tối đa dưới dạng số (%)
+  const [currentWeight, setCurrentWeight] = useState(0.0); // Lưu trọng lượng hiện tại dưới dạng số (8.8 kg)
+  const [scannedCode, setScannedCode] = useState(''); // Lưu mã đã quét dưới dạng chuỗi
+  const [tableData, setTableData] = useState<WeighingData>(null); // Lưu dữ liệu bảng
+
+  // --- PHẦN LOGIC TÍNH TOÁN TỰ ĐỘNG ---
+  // Tính toán giá trị chênh lệch thực tế
+  const deviationAmount = standardWeight * (deviationPercent / 100);
+
+  // Tính toán MIN và MAX dựa trên các giá trị trên
+  const minWeight = standardWeight - deviationAmount;
+  const maxWeight = standardWeight + deviationAmount;
+
+  // Tạo hàm này để cập nhật state mỗi khi người dùng gõ phím
+  const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setScannedCode(event.target.value);
+  };
+
+  const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentWeight(event.target.value ? parseFloat(event.target.value) : 0.0);
+  };
+
+  // Tạo mảng chứa các giá trị của bảng, nếu không có dữ liệu thì sẽ là mảng rỗng
+  // Mảng này sẽ chứa các giá trị tương ứng với tiêu đề bảng
+  // Nếu không có dữ liệu, sẽ hiển thị các ô trống
+  const tableValues = tableData 
+    ? [tableData.name, tableData.solo, tableData.somay, tableData.weight.toFixed(1), tableData.user, tableData.time]
+    : Array(6).fill('');
+
+
+  // Tạo hàm xử lý khi nhấn nút "Scan"
+  const handleScan = () => {
+    // So sánh code người dùng nhập với code trong dữ liệu giả lập
+    if (scannedCode === testData.code) {
+      // Nếu đúng, cập nhật state của bảng với dữ liệu mới
+      setTableData(testData);
+      // Cập nhật Trọng lượng tiêu chuẩn từ dữ liệu mới
+      setStandardWeight(testData.weight);
+    } else {
+      // Nếu sai, thông báo cho người dùng và xóa dữ liệu bảng (nếu có)
+      alert("Mã không hợp lệ! Vui lòng thử lại.");
+      setTableData(null);
+    }
+    // Xóa ô input để chuẩn bị cho lần quét tiếp theo
+    setScannedCode('');
   };
 
   const tableHeaders = [
@@ -16,24 +72,28 @@ function WeighingStation() {
     <div className="p-8 max-w-7xl mx-auto">
       {/* --- KHU VỰC HIỂN THỊ TRỌNG LƯỢNG --- */}
       <div className="flex justify-between items-start mb-8">
-        {/* Thông tin bên trái */}
         <div className="space-y-3">
           <h1 className="text-4xl font-bold">
             <span className="text-yellow-500">Trọng lượng:</span>
-            <span className="ml-4 bg-gray-500 text-yellow-400 font-mono px-4 py-1 rounded">
-              {weightData.current}
-            </span>
+            <input type='numberic' className="ml-4 bg-gray-500 text-yellow-400 lining-nums px-4 py-1 rounded"
+              value={currentWeight}
+              onChange={handleCurentChange}>
+              {/* Sử dụng .toFixed(1) để luôn hiển thị 1 chữ số thập phân */}
+            </input>
           </h1>
-          <p className="text-lg font-semibold text-black">
-            Trọng lượng tiêu chuẩn: <span className="text-green-600 font-bold">{weightData.standard}</span>
-            <span className="ml-8">Chênh lệch tối đa: <span className="text-green-600 font-bold">{weightData.deviation}</span></span>
+
+          {/* Hiển thị các giá trị từ state và tính toán */}
+          <p className="text-lg font-bold text-black">
+            Trọng lượng tiêu chuẩn: <span className="text-green-600">{standardWeight.toFixed(1)}</span>
+            <span className="ml-8">Chênh lệch tối đa: <span className="text-green-600">{deviationPercent}%</span></span>
           </p>
-          <p className="text-lg font-semibold text-black">
-            MIN: {weightData.min}
-            <span className="ml-16">MAX: {weightData.max}</span>
+          <p className="text-lg font-bold text-black">
+            MIN: <span className="font-normal">{minWeight.toFixed(1)}</span>
+            <span className="ml-16">
+              MAX: <span className="font-normal">{maxWeight.toFixed(1)}</span>
+            </span>
           </p>
         </div>
-        {/* Nút Hoàn tất bên phải */}
         <div>
           <button className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors">
             Hoàn tất
@@ -51,9 +111,9 @@ function WeighingStation() {
             </div>
           ))}
           {/* Các ô dữ liệu (6 ô trống) */}
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="bg-gray-100 h-20 border-t border-l border-gray-300">
-              {/* Nội dung sẽ được điền vào đây */}
+          {tableValues.map((value, index) => (
+            <div key={index} className="bg-gray-100 h-20 border-b border-l border-gray-300 flex items-center justify-center font-medium text-gray-800">
+              {value}
             </div>
           ))}
         </div>
@@ -61,10 +121,17 @@ function WeighingStation() {
 
       {/* --- KHU VỰC QUÉT MÃ --- */}
       <div className="flex items-center gap-6">
-        <div className="flex-grow border-2 border-green-500 rounded-md p-4 text-center text-gray-400 text-2xl font-mono">
-          CODE HERE
-        </div>
-        <button className="bg-green-500 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-600 transition-colors">
+        <input
+          type="text"
+          className="flex-grow border-2 border-green-500 rounded-md p-4 text-center text-2xl font-mono bg-white text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+          placeholder="CODE HERE"
+          value={scannedCode}
+          onChange={handleCodeChange}
+        />
+        <button 
+          onClick={handleScan}
+          className="bg-green-600 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-800 transition-colors"
+        >
           Scan
         </button>
       </div>
