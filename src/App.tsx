@@ -1,16 +1,16 @@
 import './App.css'
 import Header from './components/Header';
+import WeighingStation from './components/WeighingStation';
 
 function App() {
 
   return (
     <>
       <Header />
-      <main style={{ padding: '60px' }}>
-        <h2>Chào mừng đến với trang web của tôi!</h2>
-        <p>
-          Đây là nội dung chính của trang. Chúng ta sẽ thêm nhiều chức năng hơn ở đây.
-        </p>
+      <main>
+        <main className="pt-[70px]"> {/* Padding top để không bị Header che */}
+        <WeighingStation />
+      </main>
       </main>
     </>
   )
