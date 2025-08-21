@@ -93,6 +93,23 @@ function WeighingStation() {
     }
   };
 
+  // Tạo hàm xử lý khi nhấn nút "Hoàn tất"
+  const handleSunmit = () => {
+    // Kiểm tra tính hợp lệ của trọng lượng
+    if (isWeightValid && tableData) {
+      // Nếu hợp lệ, thông báo thành công
+      alert("Trọng lượng hợp lệ! Dữ liệu đã được lưu.");
+      // Reset các trường nhập liệu
+      setCurrentWeight('');
+      setScannedCode('');
+      setTableData(null);
+    } else {
+      // Nếu không hợp lệ, thông báo lỗi
+      alert("Trọng lượng không hợp lệ! Vui lòng kiểm tra lại.");
+    }
+  };
+  
+  // Tạo mảng tiêu đề bảng
   const tableHeaders = [
     "Tên phôi keo", "Số Lô", "Số Máy", "Khối lượng mẻ (kg)", "Người Thao Tác", "Thời gian trộn"
   ];
@@ -127,7 +144,10 @@ function WeighingStation() {
           </p>
         </div>  
         <div>
-          <button className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors">
+          <button 
+            className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors"
+            onClick={handleSunmit}
+          >
             Hoàn tất
           </button>
         </div>
