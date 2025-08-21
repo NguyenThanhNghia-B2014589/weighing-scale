@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
   // Dữ liệu giả lập
   const testData = {
-    code: "12345",
+    code: "123",
     name: "Phôi keo A",
     solo: "Lô 1",
     somay: "Máy 1",
@@ -21,6 +21,7 @@ function WeighingStation() {
   const [currentWeight, setCurrentWeight] = useState(''); // Lưu trọng lượng hiện tại dưới dạng số (8.8 kg)
   const [scannedCode, setScannedCode] = useState(''); // Lưu mã đã quét dưới dạng chuỗi
   const [tableData, setTableData] = useState<WeighingData>(null); // Lưu dữ liệu bảng
+  const [isWeightValid, setIsWeightValid] = useState(false); // Kiểm tra tính hợp lệ của trọng lượng
 
   // --- PHẦN LOGIC TÍNH TOÁN TỰ ĐỘNG ---
   // Tính toán giá trị chênh lệch thực tế
@@ -41,7 +42,34 @@ function WeighingStation() {
   //const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //setCurrentWeight(event.target.value ? parseFloat(event.target.value) : 0.0);
   //};
-  
+
+  // Kiểm tra tính hợp lệ của trọng lượng hiện tại
+  // Sử dụng useEffect để thực hiện
+  useEffect(() => {
+    // Chuyển đổi giá trị input thành số
+    const numericCurrentWeight = parseFloat(currentWeight);
+
+    // Kiểm tra xem có phải là số hợp lệ và đã có dữ liệu tiêu chuẩn chưa
+    if (!isNaN(numericCurrentWeight) && tableData) {
+      // Nếu nằm trong khoảng, set state thành true
+      if (numericCurrentWeight >= minWeight && numericCurrentWeight <= maxWeight) {
+        setIsWeightValid(true);
+      } else {
+        // Nếu nằm ngoài khoảng, set state thành false
+        setIsWeightValid(false);
+      }
+    } else {
+      // Nếu không phải số hoặc chưa có dữ liệu, coi như không hợp lệ
+      setIsWeightValid(false);
+    }
+    // Mảng phụ thuộc: Hook này sẽ chạy lại mỗi khi `currentWeight`, `minWeight`, hoặc `maxWeight` thay đổi
+  }, [currentWeight, minWeight, maxWeight, tableData]);
+
+  //  Xác định class màu sắc dựa trên state isWeightValid
+  const weightColorClass = tableData && currentWeight !== ''
+    ? (isWeightValid ? 'text-green-500' : 'text-red-500')
+    : 'text-yellow-400';
+
   // Tạo mảng chứa các giá trị của bảng, nếu không có dữ liệu thì sẽ là mảng rỗng
   // Mảng này sẽ chứa các giá trị tương ứng với tiêu đề bảng
   // Nếu không có dữ liệu, sẽ hiển thị các ô trống
@@ -63,8 +91,6 @@ function WeighingStation() {
       alert("Mã không hợp lệ! Vui lòng thử lại.");
       setTableData(null);
     }
-    // Xóa ô input để chuẩn bị cho lần quét tiếp theo
-    setScannedCode('');
   };
 
   const tableHeaders = [
@@ -78,12 +104,14 @@ function WeighingStation() {
         <div className="space-y-3">
           <h1 className="text-4xl font-bold">
             <span className="text-yellow-500">Trọng lượng:</span>
-            <input type='number' className="ml-4 bg-gray-500 text-yellow-400 lining-nums px-4 py-1 rounded w-48 "
+            < input
+              type='number' 
+              className={`ml-4 bg-gray-500 font-mono px-4 py-1 rounded w-48 text-center ${weightColorClass}`}
               placeholder="0.0"
               value={currentWeight}
-              onChange={handleCurentChange}>
-              {/* Sử dụng .toFixed(1) để luôn hiển thị 1 chữ số thập phân */}
-            </input>
+              step="0.1"
+              onChange={handleCurentChange}
+            />
           </h1>
 
           {/* Hiển thị các giá trị từ state và tính toán */}
