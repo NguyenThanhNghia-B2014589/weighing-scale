@@ -18,7 +18,7 @@ function WeighingStation() {
   // Sử dụng useState để quản lý dữ liệu
   const [standardWeight, setStandardWeight] = useState(0.0);  //Lưu khối lượng tiêu chuẩn dưới dạng số (8.0 kg)
   const [deviationPercent, setDeviationPercent] = useState(3); // Lưu chênh lệch tối đa dưới dạng số (%)
-  const [currentWeight, setCurrentWeight] = useState(0.0); // Lưu trọng lượng hiện tại dưới dạng số (8.8 kg)
+  const [currentWeight, setCurrentWeight] = useState(''); // Lưu trọng lượng hiện tại dưới dạng số (8.8 kg)
   const [scannedCode, setScannedCode] = useState(''); // Lưu mã đã quét dưới dạng chuỗi
   const [tableData, setTableData] = useState<WeighingData>(null); // Lưu dữ liệu bảng
 
@@ -36,9 +36,12 @@ function WeighingStation() {
   };
 
   const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWeight(event.target.value ? parseFloat(event.target.value) : 0.0);
-  };
-
+    setCurrentWeight(event.target.value);
+  }
+  //const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //setCurrentWeight(event.target.value ? parseFloat(event.target.value) : 0.0);
+  //};
+  
   // Tạo mảng chứa các giá trị của bảng, nếu không có dữ liệu thì sẽ là mảng rỗng
   // Mảng này sẽ chứa các giá trị tương ứng với tiêu đề bảng
   // Nếu không có dữ liệu, sẽ hiển thị các ô trống
@@ -75,7 +78,8 @@ function WeighingStation() {
         <div className="space-y-3">
           <h1 className="text-4xl font-bold">
             <span className="text-yellow-500">Trọng lượng:</span>
-            <input type='numberic' className="ml-4 bg-gray-500 text-yellow-400 lining-nums px-4 py-1 rounded"
+            <input type='number' className="ml-4 bg-gray-500 text-yellow-400 lining-nums px-4 py-1 rounded w-48 "
+              placeholder="0.0"
               value={currentWeight}
               onChange={handleCurentChange}>
               {/* Sử dụng .toFixed(1) để luôn hiển thị 1 chữ số thập phân */}
@@ -83,17 +87,17 @@ function WeighingStation() {
           </h1>
 
           {/* Hiển thị các giá trị từ state và tính toán */}
-          <p className="text-lg font-bold text-black">
-            Trọng lượng tiêu chuẩn: <span className="text-green-600">{standardWeight.toFixed(1)}</span>
-            <span className="ml-8">Chênh lệch tối đa: <span className="text-green-600">{deviationPercent}%</span></span>
+          <p className="text-lg font-bold text-black ">
+            Trọng lượng tiêu chuẩn: <span className="inline-block w-16 text-green-600">{standardWeight.toFixed(1)}</span>
+            <span className="ml-8">Chênh lệch tối đa: <span className="inline-block w-16 text-green-600">{deviationPercent}%</span></span>
           </p>
           <p className="text-lg font-bold text-black">
-            MIN: <span className="font-normal">{minWeight.toFixed(1)}</span>
+              MIN: <span className="inline-block w-16 font-normal">{minWeight.toFixed(1)}</span>
             <span className="ml-16">
-              MAX: <span className="font-normal">{maxWeight.toFixed(1)}</span>
+              MAX: <span className="inline-block w-16 font-normal">{maxWeight.toFixed(1)}</span>
             </span>
           </p>
-        </div>
+        </div>  
         <div>
           <button className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors">
             Hoàn tất
