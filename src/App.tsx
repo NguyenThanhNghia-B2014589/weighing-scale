@@ -7,10 +7,8 @@ function App() {
   return (
     <>
       <Header />
-      <main>
-        <main className="pt-[70px]"> {/* Padding top để không bị Header che */}
+      <main className="pt-[70px]"> {/* Padding top để không bị Header che */}
         <WeighingStation />
-      </main>
       </main>
     </>
   )

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-  // Dữ liệu giả lập
-  const testData = {
+// --- DỮ LIỆU GIẢ LẬP ---
+const mockApiData = {
+  "123": {
     code: "123",
     name: "Phôi keo A",
     solo: "Lô 1",
@@ -9,113 +10,165 @@ import React, { useState, useEffect } from 'react';
     weight: 55.0,
     user: "Nguyễn Văn A",
     time: "12:00 01/01/2025"
-  };
+  },
+  "456": {
+    code: "456",
+    name: "Phôi keo B",
+    solo: "Lô 2",
+    somay: "Máy 3",
+    weight: 62.5,
+    user: "Trần Thị B",
+    time: "14:30 02/01/2025"
+  }
+};
 
-  type WeighingData = typeof testData | null;
+// --- ĐỊNH NGHĨA TYPE CHO DỮ LIỆU ---
+type WeighingData = {
+  code: string;
+  name: string;
+  solo: string;
+  somay: string;
+  weight: number;
+  user: string;
+  time: string;
+};
+
+// --- COMPONENT THÔNG BÁO ---
+function Notification({ message, type, onClear }: { message: string; type: 'success' | 'error'; onClear: () => void }) {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    if (message) {
+      setIsVisible(true);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 2500); // Ẩn dần sau 2.5 giây
+      const clearTimer = setTimeout(() => {
+        onClear();
+      }, 3000); // Clear state sau 3 giây
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(clearTimer);
+      };
+    }
+  }, [message, onClear]);
+
+
+  if (!message) return null;
+
+  // Lớp Tailwind CSS cho thông báo
+  const baseClasses = "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-10 rounded-xl text-white font-bold text-center shadow-lg transition-transform duration-500 z-50 flex flex-col items-center justify-center min-w-[300px]";
+  const animationClass = isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90';
+
+  // Định nghĩa màu nền và biểu tượng dựa trên loại thông báo
+  const bgColor = type === 'success' ? 'bg-[#B4D080]' : 'bg-[#F97316]';
+  const icon = type === 'success'
+    ? (
+      <svg className="h-16 w-16 text-white mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      </svg>
+    )
+    : (
+      <svg className="h-16 w-16 text-white mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.332 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    );
+
+  return (
+    <div className={`${baseClasses} ${bgColor} ${animationClass}`}>
+      {icon}
+      <span className="text-2xl">{message}</span>
+    </div>
+  );
+}
 
 function WeighingStation() {
+  // --- QUẢN LÝ STATE ---
+  const [standardWeight, setStandardWeight] = useState(0.0);
+  const [deviationPercent, setDeviationPercent] = useState(3);
+  const [currentWeight, setCurrentWeight] = useState<number | null>(null); // Lưu trọng lượng hiện tại dưới dạng số hoặc null (khi trống) để tính toán dễ dàng hơn
+  const [scannedCode, setScannedCode] = useState('');
+  const [tableData, setTableData] = useState<WeighingData | null>(null);
+  const [notification, setNotification] = useState({ message: '', type: 'success' as 'success' | 'error' });
 
-  // Sử dụng useState để quản lý dữ liệu
-  const [standardWeight, setStandardWeight] = useState(0.0);  //Lưu khối lượng tiêu chuẩn dưới dạng số (8.0 kg)
-  const [deviationPercent, setDeviationPercent] = useState(3); // Lưu chênh lệch tối đa dưới dạng số (%)
-  const [currentWeight, setCurrentWeight] = useState(''); // Lưu trọng lượng hiện tại dưới dạng số (8.8 kg)
-  const [scannedCode, setScannedCode] = useState(''); // Lưu mã đã quét dưới dạng chuỗi
-  const [tableData, setTableData] = useState<WeighingData>(null); // Lưu dữ liệu bảng
-  const [isWeightValid, setIsWeightValid] = useState(false); // Kiểm tra tính hợp lệ của trọng lượng
+  // --- TÍNH TOÁN CÁC GIÁ TRỊ PHÁI SINH BẰNG `useMemo` ĐỂ TỐI ƯU HIỆU NĂNG ---
+  // Các giá trị này chỉ được tính toán lại khi standardWeight hoặc deviationPercent thay đổi
+  const { minWeight, maxWeight } = useMemo(() => {
+    const deviationAmount = standardWeight * (deviationPercent / 100);
+    const min = standardWeight - deviationAmount;
+    const max = standardWeight + deviationAmount;
+    return { minWeight: min, maxWeight: max };
+  }, [standardWeight, deviationPercent]);
 
-  // --- PHẦN LOGIC TÍNH TOÁN TỰ ĐỘNG ---
-  // Tính toán giá trị chênh lệch thực tế
-  const deviationAmount = standardWeight * (deviationPercent / 100);
+  // --- KIỂM TRA TÍNH HỢP LỆ CỦA TRỌNG LƯỢNG ---
+  // `useMemo` cũng rất phù hợp ở đây, nó sẽ tính toán lại khi các giá trị phụ thuộc thay đổi
+  const isWeightValid = useMemo(() => {
+    if (currentWeight === null || !tableData) {
+      return false;
+    }
+    return currentWeight >= minWeight && currentWeight <= maxWeight;
+  }, [currentWeight, minWeight, maxWeight, tableData]);
 
-  // Tính toán MIN và MAX dựa trên các giá trị trên
-  const minWeight = standardWeight - deviationAmount;
-  const maxWeight = standardWeight + deviationAmount;
+  // --- XÁC ĐỊNH MÀU SẮC CHO Ô NHẬP TRỌNG LƯỢNG ---
+  const weightColorClass = currentWeight !== null && tableData
+    ? (isWeightValid ? 'text-green-400' : 'text-red-400')
+    : 'text-yellow-400'; // Màu mặc định khi chưa nhập
 
-  // Tạo hàm này để cập nhật state mỗi khi người dùng gõ phím
+  // --- XỬ LÝ SỰ KIỆN ---
   const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setScannedCode(event.target.value);
   };
 
-  const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWeight(event.target.value);
-  }
-  //const handleCurentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //setCurrentWeight(event.target.value ? parseFloat(event.target.value) : 0.0);
-  //};
-
-  // Kiểm tra tính hợp lệ của trọng lượng hiện tại
-  // Sử dụng useEffect để thực hiện
-  useEffect(() => {
-    // Chuyển đổi giá trị input thành số
-    const numericCurrentWeight = parseFloat(currentWeight);
-
-    // Kiểm tra xem có phải là số hợp lệ và đã có dữ liệu tiêu chuẩn chưa
-    if (!isNaN(numericCurrentWeight) && tableData) {
-      // Nếu nằm trong khoảng, set state thành true
-      if (numericCurrentWeight >= minWeight && numericCurrentWeight <= maxWeight) {
-        setIsWeightValid(true);
-      } else {
-        // Nếu nằm ngoài khoảng, set state thành false
-        setIsWeightValid(false);
-      }
-    } else {
-      // Nếu không phải số hoặc chưa có dữ liệu, coi như không hợp lệ
-      setIsWeightValid(false);
-    }
-    // Mảng phụ thuộc: Hook này sẽ chạy lại mỗi khi `currentWeight`, `minWeight`, hoặc `maxWeight` thay đổi
-  }, [currentWeight, minWeight, maxWeight, tableData]);
-
-  //  Xác định class màu sắc dựa trên state isWeightValid
-  const weightColorClass = tableData && currentWeight !== ''
-    ? (isWeightValid ? 'text-green-500' : 'text-red-500')
-    : 'text-yellow-400';
-
-  // Tạo mảng chứa các giá trị của bảng, nếu không có dữ liệu thì sẽ là mảng rỗng
-  // Mảng này sẽ chứa các giá trị tương ứng với tiêu đề bảng
-  // Nếu không có dữ liệu, sẽ hiển thị các ô trống
-  const tableValues = tableData 
-    ? [tableData.name, tableData.solo, tableData.somay, tableData.weight.toFixed(1), tableData.user, tableData.time]
-    : Array(6).fill('');
-
-
-  // Tạo hàm xử lý khi nhấn nút "Scan"
-  const handleScan = () => {
-    // So sánh code người dùng nhập với code trong dữ liệu giả lập
-    if (scannedCode === testData.code) {
-      // Nếu đúng, cập nhật state của bảng với dữ liệu mới
-      setTableData(testData);
-      // Cập nhật Trọng lượng tiêu chuẩn từ dữ liệu mới
-      setStandardWeight(testData.weight);
-    } else {
-      // Nếu sai, thông báo cho người dùng và xóa dữ liệu bảng (nếu có)
-      alert("Mã không hợp lệ! Vui lòng thử lại.");
-      setTableData(null);
-    }
+  const handleCurrentWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    // Nếu ô input trống, set state là null. Nếu không, chuyển thành số.
+    setCurrentWeight(value === '' ? null : parseFloat(value));
   };
 
-  // Tạo hàm xử lý khi nhấn nút "Hoàn tất"
-  const handleSunmit = () => {
-    // Kiểm tra tính hợp lệ của trọng lượng
+  // Xử lý sự kiện khi người dùng quét mã
+  const handleScan = () => {
+    // Tìm kiếm dữ liệu dựa trên mã đã quét
+    const foundData = mockApiData[scannedCode as keyof typeof mockApiData];
+
+    if (foundData) {
+      setTableData(foundData);
+      setStandardWeight(foundData.weight);
+      setNotification({ message: 'Quét mã thành công!', type: 'success' });
+    } else {
+      setTableData(null);
+      setStandardWeight(0);
+      setNotification({ message: 'Mã không hợp lệ! Vui lòng thử lại.', type: 'error' });
+    }
+  };
+  // Xử lý sự kiện khi người dùng nhấn nút "Hoàn tất"
+  const handleSubmit = () => {
     if (isWeightValid && tableData) {
-      // Nếu hợp lệ, thông báo thành công
-      alert("Trọng lượng hợp lệ! Dữ liệu đã được lưu.");
-      // Reset các trường nhập liệu
-      setCurrentWeight('');
+      setNotification({ message: 'Trọng lượng hợp lệ! Dữ liệu đã được lưu.', type: 'success' });
+      // Reset lại trạng thái sau khi hoàn tất
+      setCurrentWeight(null);
       setScannedCode('');
       setTableData(null);
+      setStandardWeight(0);
     } else {
-      // Nếu không hợp lệ, thông báo lỗi
-      alert("Trọng lượng không hợp lệ! Vui lòng kiểm tra lại.");
+      setNotification({ message: 'Trọng lượng không hợp lệ!', type: 'error' });
     }
   };
-  
-  // Tạo mảng tiêu đề bảng
-  const tableHeaders = [
-    "Tên phôi keo", "Số Lô", "Số Máy", "Khối lượng mẻ (kg)", "Người Thao Tác", "Thời gian trộn"
-  ];
+
+  // --- CHUẨN BỊ DỮ LIỆU CHO BẢNG ---
+  const tableHeaders = ["Tên phôi keo", "Số Lô", "Số Máy", "Khối lượng mẻ (kg)", "Người Thao Tác", "Thời gian trộn"];
+  const tableValues = tableData
+    ? [tableData.name, tableData.solo, tableData.somay, tableData.weight.toFixed(1), tableData.user, tableData.time]
+    : Array(tableHeaders.length).fill('');
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
+      <Notification 
+        message={notification.message}
+        type={notification.type}
+        onClear={() => {
+          setNotification({ message: '', type: 'success' });
+        }}
+      />
       {/* --- KHU VỰC HIỂN THỊ TRỌNG LƯỢNG --- */}
       <div className="flex justify-between items-start mb-8">
         <div className="space-y-3">
@@ -125,10 +178,11 @@ function WeighingStation() {
               type='number' 
               className={`ml-4 bg-gray-500 font-mono px-4 py-1 rounded w-48 text-center ${weightColorClass}`}
               placeholder="0.0"
-              value={currentWeight}
+              value={currentWeight === null ? '' : currentWeight}
               step="0.1"
-              onChange={handleCurentChange}
+              onChange={handleCurrentWeightChange}
             />
+            <span className="text-3xl ml-2 text-gray-500">Kg</span>
           </h1>
 
           {/* Hiển thị các giá trị từ state và tính toán */}
@@ -146,7 +200,8 @@ function WeighingStation() {
         <div>
           <button 
             className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors"
-            onClick={handleSunmit}
+            onClick={handleSubmit}
+            disabled={!tableData}
           >
             Hoàn tất
           </button>
@@ -179,10 +234,11 @@ function WeighingStation() {
           placeholder="CODE HERE"
           value={scannedCode}
           onChange={handleCodeChange}
+          onKeyDown={(e) => e.key === 'Enter' && handleScan()}
         />
-        <button 
+        <button
           onClick={handleScan}
-          className="bg-green-600 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-800 transition-colors"
+          className="bg-green-600 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors"
         >
           Scan
         </button>
