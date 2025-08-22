@@ -5,12 +5,12 @@ import WeighingStation from './components/WeighingStation';
 function App() {
 
   return (
-    <>
+    <div className="bg-sky-200 min-h-screen">
       <Header />
-      <main className="pt-[70px]"> {/* Padding top để không bị Header che */}
+      <main className=" pt-[70px]">
         <WeighingStation />
       </main>
-    </>
+    </div>
   )
 }
 

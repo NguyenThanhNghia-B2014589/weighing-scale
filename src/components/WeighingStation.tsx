@@ -42,10 +42,10 @@ function Notification({ message, type, onClear }: { message: string; type: 'succ
       setIsVisible(true);
       const timer = setTimeout(() => {
         setIsVisible(false);
-      }, 2500); // Ẩn dần sau 2.5 giây
+      }, 1500); // Ẩn dần sau 2.5 giây
       const clearTimer = setTimeout(() => {
         onClear();
-      }, 3000); // Clear state sau 3 giây
+      }, 1500); // Clear state sau 3 giây
       return () => {
         clearTimeout(timer);
         clearTimeout(clearTimer);
@@ -90,6 +90,7 @@ function WeighingStation() {
   const [scannedCode, setScannedCode] = useState('');
   const [tableData, setTableData] = useState<WeighingData | null>(null);
   const [notification, setNotification] = useState({ message: '', type: 'success' as 'success' | 'error' });
+  const [isUiDisabled, setIsUiDisabled] = useState(false);
 
   // --- TÍNH TOÁN CÁC GIÁ TRỊ PHÁI SINH BẰNG `useMemo` ĐỂ TỐI ƯU HIỆU NĂNG ---
   // Các giá trị này chỉ được tính toán lại khi standardWeight hoặc deviationPercent thay đổi
@@ -139,6 +140,7 @@ function WeighingStation() {
       setStandardWeight(0);
       setNotification({ message: 'Mã không hợp lệ! Vui lòng thử lại.', type: 'error' });
     }
+    setIsUiDisabled(true);
   };
   // Xử lý sự kiện khi người dùng nhấn nút "Hoàn tất"
   const handleSubmit = () => {
@@ -152,6 +154,7 @@ function WeighingStation() {
     } else {
       setNotification({ message: 'Trọng lượng không hợp lệ!', type: 'error' });
     }
+    setIsUiDisabled(true);
   };
 
   // --- CHUẨN BỊ DỮ LIỆU CHO BẢNG ---
@@ -167,10 +170,14 @@ function WeighingStation() {
         type={notification.type}
         onClear={() => {
           setNotification({ message: '', type: 'success' });
+          setIsUiDisabled(false);
         }}
       />
+      {isUiDisabled && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"></div>
+      )}
       {/* --- KHU VỰC HIỂN THỊ TRỌNG LƯỢNG --- */}
-      <div className="flex justify-between items-start mb-8">
+      <div className={`flex justify-between items-start mb-8 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
         <div className="space-y-3">
           <h1 className="text-4xl font-bold">
             <span className="text-yellow-500">Trọng lượng:</span>
@@ -181,6 +188,7 @@ function WeighingStation() {
               value={currentWeight === null ? '' : currentWeight}
               step="0.1"
               onChange={handleCurrentWeightChange}
+              disabled={isUiDisabled}
             />
             <span className="text-3xl ml-2 text-gray-500">Kg</span>
           </h1>
@@ -201,7 +209,7 @@ function WeighingStation() {
           <button 
             className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors"
             onClick={handleSubmit}
-            disabled={!tableData}
+            disabled={!tableData || isUiDisabled}
           >
             Hoàn tất
           </button>
@@ -209,7 +217,7 @@ function WeighingStation() {
       </div>
 
       {/* --- BẢNG THÔNG TIN --- */}
-      <div className="mb-8">
+      <div className={`mb-8 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
         <div className="grid grid-cols-6 border border-gray-300">
           {/* Tiêu đề bảng */}
           {tableHeaders.map((header) => (
@@ -227,7 +235,7 @@ function WeighingStation() {
       </div>
 
       {/* --- KHU VỰC QUÉT MÃ --- */}
-      <div className="flex items-center gap-6">
+      <div className={`flex items-center gap-6 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
         <input
           type="text"
           className="flex-grow border-2 border-green-500 rounded-md p-4 text-center text-2xl font-mono bg-white text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
@@ -239,6 +247,7 @@ function WeighingStation() {
         <button
           onClick={handleScan}
           className="bg-green-600 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors"
+          disabled={isUiDisabled}
         >
           Scan
         </button>
