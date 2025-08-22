@@ -40,27 +40,27 @@ function Notification({ message, type, onClear }: { message: string; type: 'succ
   useEffect(() => {
     if (message) {
       setIsVisible(true);
-      const timer = setTimeout(() => {
+      // Bắt đầu animation ẩn sau một khoảng thời gian
+      const fadeOutTimer = setTimeout(() => {
         setIsVisible(false);
-      }, 1500); // Ẩn dần sau 2.5 giây
+      }, 1500);
+
+      // Xóa state sau khi animation đã hoàn thành (1500ms hiển thị + 500ms animation)
       const clearTimer = setTimeout(() => {
         onClear();
-      }, 1500); // Clear state sau 3 giây
+      }, 1500); 
+
       return () => {
-        clearTimeout(timer);
+        clearTimeout(fadeOutTimer);
         clearTimeout(clearTimer);
       };
     }
   }, [message, onClear]);
 
-
   if (!message) return null;
 
-  // Lớp Tailwind CSS cho thông báo
-  const baseClasses = "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-10 rounded-xl text-white font-bold text-center shadow-lg transition-transform duration-500 z-50 flex flex-col items-center justify-center min-w-[300px]";
-  const animationClass = isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90';
-
-  // Định nghĩa màu nền và biểu tượng dựa trên loại thông báo
+  const baseClasses = "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-10 rounded-xl text-white font-bold text-center shadow-lg transition-all duration-500 z-50 flex flex-col items-center justify-center min-w-[300px]";
+  const animationClass = isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none';
   const bgColor = type === 'success' ? 'bg-[#B4D080]' : 'bg-[#F97316]';
   const icon = type === 'success'
     ? (
@@ -82,18 +82,21 @@ function Notification({ message, type, onClear }: { message: string; type: 'succ
   );
 }
 
+// --- COMPONENT CHÍNH ---
 function WeighingStation() {
   // --- QUẢN LÝ STATE ---
   const [standardWeight, setStandardWeight] = useState(0.0);
   const [deviationPercent, setDeviationPercent] = useState(3);
-  const [currentWeight, setCurrentWeight] = useState<number | null>(null); // Lưu trọng lượng hiện tại dưới dạng số hoặc null (khi trống) để tính toán dễ dàng hơn
+  const [currentWeight, setCurrentWeight] = useState<number | null>(null);
   const [scannedCode, setScannedCode] = useState('');
   const [tableData, setTableData] = useState<WeighingData | null>(null);
   const [notification, setNotification] = useState({ message: '', type: 'success' as 'success' | 'error' });
-  const [isUiDisabled, setIsUiDisabled] = useState(false);
 
-  // --- TÍNH TOÁN CÁC GIÁ TRỊ PHÁI SINH BẰNG `useMemo` ĐỂ TỐI ƯU HIỆU NĂNG ---
-  // Các giá trị này chỉ được tính toán lại khi standardWeight hoặc deviationPercent thay đổi
+  // --- BIẾN PHÁI SINH (Derived State) ---
+  // Giao diện bị vô hiệu hóa KHI VÀ CHỈ KHI có thông báo
+  const isUiDisabled = !!notification.message;
+
+  // --- TÍNH TOÁN CÁC GIÁ TRỊ PHÁI SINH BẰNG `useMemo` ---
   const { minWeight, maxWeight } = useMemo(() => {
     const deviationAmount = standardWeight * (deviationPercent / 100);
     const min = standardWeight - deviationAmount;
@@ -101,19 +104,15 @@ function WeighingStation() {
     return { minWeight: min, maxWeight: max };
   }, [standardWeight, deviationPercent]);
 
-  // --- KIỂM TRA TÍNH HỢP LỆ CỦA TRỌNG LƯỢNG ---
-  // `useMemo` cũng rất phù hợp ở đây, nó sẽ tính toán lại khi các giá trị phụ thuộc thay đổi
   const isWeightValid = useMemo(() => {
-    if (currentWeight === null || !tableData) {
-      return false;
-    }
+    if (currentWeight === null || !tableData) return false;
     return currentWeight >= minWeight && currentWeight <= maxWeight;
   }, [currentWeight, minWeight, maxWeight, tableData]);
 
   // --- XÁC ĐỊNH MÀU SẮC CHO Ô NHẬP TRỌNG LƯỢNG ---
   const weightColorClass = currentWeight !== null && tableData
     ? (isWeightValid ? 'text-green-400' : 'text-red-400')
-    : 'text-yellow-400'; // Màu mặc định khi chưa nhập
+    : 'text-yellow-400';
 
   // --- XỬ LÝ SỰ KIỆN ---
   const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,15 +121,11 @@ function WeighingStation() {
 
   const handleCurrentWeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    // Nếu ô input trống, set state là null. Nếu không, chuyển thành số.
     setCurrentWeight(value === '' ? null : parseFloat(value));
   };
 
-  // Xử lý sự kiện khi người dùng quét mã
   const handleScan = () => {
-    // Tìm kiếm dữ liệu dựa trên mã đã quét
     const foundData = mockApiData[scannedCode as keyof typeof mockApiData];
-
     if (foundData) {
       setTableData(foundData);
       setStandardWeight(foundData.weight);
@@ -138,15 +133,13 @@ function WeighingStation() {
     } else {
       setTableData(null);
       setStandardWeight(0);
-      setNotification({ message: 'Mã không hợp lệ! Vui lòng thử lại.', type: 'error' });
+      setNotification({ message: 'Mã không hợp lệ!', type: 'error' });
     }
-    setIsUiDisabled(true);
   };
-  // Xử lý sự kiện khi người dùng nhấn nút "Hoàn tất"
+
   const handleSubmit = () => {
     if (isWeightValid && tableData) {
-      setNotification({ message: 'Trọng lượng hợp lệ! Dữ liệu đã được lưu.', type: 'success' });
-      // Reset lại trạng thái sau khi hoàn tất
+      setNotification({ message: 'Lưu thành công!', type: 'success' });
       setCurrentWeight(null);
       setScannedCode('');
       setTableData(null);
@@ -154,7 +147,6 @@ function WeighingStation() {
     } else {
       setNotification({ message: 'Trọng lượng không hợp lệ!', type: 'error' });
     }
-    setIsUiDisabled(true);
   };
 
   // --- CHUẨN BỊ DỮ LIỆU CHO BẢNG ---
@@ -164,93 +156,103 @@ function WeighingStation() {
     : Array(tableHeaders.length).fill('');
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto relative">
       <Notification 
         message={notification.message}
         type={notification.type}
-        onClear={() => {
-          setNotification({ message: '', type: 'success' });
-          setIsUiDisabled(false);
-        }}
+        onClear={() => setNotification({ message: '', type: 'success' })}
       />
       {isUiDisabled && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-25 z-40"></div>
       )}
-      {/* --- KHU VỰC HIỂN THỊ TRỌNG LƯỢNG --- */}
-      <div className={`flex justify-between items-start mb-8 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
-        <div className="space-y-3">
-          <h1 className="text-4xl font-bold">
-            <span className="text-yellow-500">Trọng lượng:</span>
-            < input
-              type='number' 
-              className={`ml-4 bg-gray-500 font-mono px-4 py-1 rounded w-48 text-center ${weightColorClass}`}
-              placeholder="0.0"
-              value={currentWeight === null ? '' : currentWeight}
-              step="0.1"
-              onChange={handleCurrentWeightChange}
-              disabled={isUiDisabled}
-            />
-            <span className="text-3xl ml-2 text-gray-500">Kg</span>
-          </h1>
+      
+      <div className={isUiDisabled ? 'pointer-events-none opacity-50' : ''}>
+        {/* --- KHU VỰC HIỂN THỊ TRỌNG LƯỢỢNG --- */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
+          <div className="space-y-3 w-full">
+            <h1 className="text-3xl md:text-4xl font-bold flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="text-yellow-500">Trọng lượng:</span>
+              <span>
+                <input
+                  type='number' 
+                  className={`bg-gray-500 font-mono px-4 py-1 rounded w-5/6 sm:w-48 text-left sm:text-center ${weightColorClass}`}
+                  placeholder="0.0"
+                  value={currentWeight === null ? '' : currentWeight}
+                  step="0.1"
+                  onChange={handleCurrentWeightChange}
+                />
+                <span className="text-2xl ml-2 text-gray-700">Kg</span>
+              </span>    
+            </h1>
 
-          {/* Hiển thị các giá trị từ state và tính toán */}
-          <p className="text-lg font-bold text-black ">
-            Trọng lượng tiêu chuẩn: <span className="inline-block w-16 text-green-600">{standardWeight.toFixed(1)}</span>
-            <span className="ml-8">Chênh lệch tối đa: <span className="inline-block w-16 text-green-600">{deviationPercent}%</span></span>
-          </p>
-          <p className="text-lg font-bold text-black">
-              MIN: <span className="inline-block w-16 font-normal">{minWeight.toFixed(1)}</span>
-            <span className="ml-16">
-              MAX: <span className="inline-block w-16 font-normal">{maxWeight.toFixed(1)}</span>
-            </span>
-          </p>
-        </div>  
-        <div>
-          <button 
-            className="bg-[#00446e] text-white font-bold px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors"
-            onClick={handleSubmit}
-            disabled={!tableData || isUiDisabled}
+            <div className="flex flex-col md:flex-row text-base md:text-lg font-bold text-black">
+              <div className="md:w-1/2">
+                <span>Trọng lượng tiêu chuẩn:
+                  <span className="pl-3 text-2xl md:text-3xl text-green-600 font-bold mt-1">{standardWeight.toFixed(1)}</span>
+                </span>
+              </div>
+              <div className="md:w-1/2 mt-2 md:mt-0">
+                <span>Chênh lệch tối đa:
+                  <span className="pl-3 text-2xl md:text-3xl text-green-600 font-bold mt-1">{deviationPercent}%</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row text-base md:text-lg font-bold text-black">
+              <div className="md:w-1/2">
+                <span>MIN:
+                  <span className="pl-3 text-2xl md:text-3xl text-black font-bold mt-1">{minWeight.toFixed(1)}</span>
+                </span>
+              </div>
+              <div className="md:w-1/2 mt-2 md:mt-0">
+                <span>MAX:
+                  <span className="pl-3 text-2xl md:text-3xl text-black font-bold mt-1">{maxWeight.toFixed(1)}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="w-full md:w-auto">
+            <button 
+              className="bg-[#00446e] text-white font-bold w-full md:w-auto px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              onClick={handleSubmit}
+              disabled={!isWeightValid || !tableData}
+            >
+              Hoàn tất
+            </button>
+          </div>
+        </div>
+
+        {/* --- BẢNG THÔNG TIN --- */}
+        <div className="mb-8">
+          <div className="hidden md:grid grid-cols-6 border-t border-r border-gray-300">
+            {tableHeaders.map((header) => ( <div key={header} className="bg-sky-400 text-black font-semibold text-center p-3 border-b border-l border-gray-300">{header}</div> ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-6 border-r border-b border-gray-300 md:border-t-0">
+            {tableValues.map((value, index) => (
+              <div key={index} className="bg-gray-100 p-3 md:h-20 border-t border-l border-gray-300 md:border-t-0 flex items-center justify-start md:justify-center font-medium text-gray-800">
+                <span className="font-bold md:hidden mr-2">{tableHeaders[index]}: </span>
+                {value}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* --- KHU VỰC QUÉT MÃ --- */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <input
+            type="text"
+            className="w-full md:flex-grow border-2 border-green-500 rounded-md p-4 text-center text-2xl font-mono bg-white text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+            placeholder="CODE HERE"
+            value={scannedCode}
+            onChange={handleCodeChange}
+            onKeyDown={(e) => e.key === 'Enter' && handleScan()}
+          />
+          <button
+            onClick={handleScan}
+            className="bg-green-600 text-white font-bold w-full md:w-auto px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors"
           >
-            Hoàn tất
+            Scan
           </button>
         </div>
-      </div>
-
-      {/* --- BẢNG THÔNG TIN --- */}
-      <div className={`mb-8 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
-        <div className="grid grid-cols-6 border border-gray-300">
-          {/* Tiêu đề bảng */}
-          {tableHeaders.map((header) => (
-            <div key={header} className="bg-sky-400 text-black font-semibold text-center p-3 border-l border-gray-300">
-              {header}
-            </div>
-          ))}
-          {/* Các ô dữ liệu (6 ô trống) */}
-          {tableValues.map((value, index) => (
-            <div key={index} className="bg-gray-100 h-20 border-b border-l border-gray-300 flex items-center justify-center font-medium text-gray-800">
-              {value}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* --- KHU VỰC QUÉT MÃ --- */}
-      <div className={`flex items-center gap-6 ${isUiDisabled ? 'pointer-events-none' : ''}`}>
-        <input
-          type="text"
-          className="flex-grow border-2 border-green-500 rounded-md p-4 text-center text-2xl font-mono bg-white text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
-          placeholder="CODE HERE"
-          value={scannedCode}
-          onChange={handleCodeChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleScan()}
-        />
-        <button
-          onClick={handleScan}
-          className="bg-green-600 text-white font-bold px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors"
-          disabled={isUiDisabled}
-        >
-          Scan
-        </button>
       </div>
     </div>
   );
