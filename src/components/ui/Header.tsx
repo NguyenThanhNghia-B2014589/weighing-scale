@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-import logoIcon from '../assets/logo.png'; // Giữ lại import icon
+import logoIcon from '../../assets/logo.png';
 
 function Header() {
   const userName = "Nguyen Van A";

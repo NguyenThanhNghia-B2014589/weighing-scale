@@ -1,6 +1,7 @@
 import './App.css'
-import Header from './components/Header';
-import WeighingStation from './components/WeighingStation';
+import Header from './components/ui/Header';
+import WeighingStation from './components/WeighingStation/WeighingStation';
+
 
 function App() {
 
