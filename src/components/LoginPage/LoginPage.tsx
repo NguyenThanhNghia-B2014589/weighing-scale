@@ -37,7 +37,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-auto flex items-center justify-center bg-sky-200 p-[200px]">
+    <div className="min-h-auto flex items-center justify-center bg-sky-200 pt-[200px]">
       
       <Notification message={notificationMessage} type={notificationType} />
 
