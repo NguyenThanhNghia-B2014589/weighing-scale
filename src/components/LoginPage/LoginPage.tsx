@@ -3,14 +3,7 @@ import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import { useNotification } from '../ui/Notification/useNotification';
 import Notification from '../ui/Notification/Notification';
 import { useAuth } from '../../context/useAuth';
-
-// Dữ liệu người dùng giả lập để kiểm tra
-const mockUser = {
-  userID: 'admin',
-  password: '123',
-  userName: 'Nguyen Van A',
-  role: 'admin',
-};
+import { mockUsers } from '../../data/users';
 
 function LoginPage() {
   const [userID, setUserID] = useState('');
@@ -20,18 +13,20 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (userID === mockUser.userID && password === mockUser.password) {
-      showNotification('Đăng nhập thành công!', 'success');
-      login({ 
-        userID: mockUser.userID,
-        userName: mockUser.userName,
-        role: mockUser.role
-      });
+    // 3. Tìm kiếm người dùng trong mảng mockUsers
+    const foundUser = mockUsers.find(
+      (user) => user.userID === userID && user.password === password
+    );
+
+    // 4. Kiểm tra kết quả tìm kiếm
+    if (foundUser) {
+      // Nếu tìm thấy người dùng, đăng nhập với thông tin của người đó
+      showNotification(`Chào mừng ${foundUser.userName}!`, 'success');
+      login(foundUser); // Truyền toàn bộ object người dùng đã tìm thấy vào context
       
-      // 3. Điều hướng sau một khoảng trễ nhỏ để người dùng kịp thấy thông báo
       setTimeout(() => {
         navigate('/WeighingStation'); // Điều hướng đến trang chủ
       }, 1500); // 1.5 giây
@@ -50,7 +45,7 @@ function LoginPage() {
         <form onSubmit={handleLogin}>
           {/* --- Ô nhập UserID --- */}
           <div className="mb-4">
-            <label  className="block text-gray-700 font-bold mb-2">
+            <label className="block text-gray-700 font-bold mb-2">
               UserID
             </label>
             <input
