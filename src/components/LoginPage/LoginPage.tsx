@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import { useNotification } from '../ui/Notification/useNotification';
 import Notification from '../ui/Notification/Notification';
+import { useAuth } from '../../context/useAuth';
 
 // Dữ liệu người dùng giả lập để kiểm tra
 const mockUser = {
@@ -16,13 +17,19 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const { notificationMessage, notificationType, showNotification } = useNotification();
   
-  const navigate = useNavigate(); // 2. Khởi tạo hook
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (userID === mockUser.userID && password === mockUser.password) {
       showNotification('Đăng nhập thành công!', 'success');
+      login({ 
+        userID: mockUser.userID,
+        userName: mockUser.userName,
+        role: mockUser.role
+      });
       
       // 3. Điều hướng sau một khoảng trễ nhỏ để người dùng kịp thấy thông báo
       setTimeout(() => {

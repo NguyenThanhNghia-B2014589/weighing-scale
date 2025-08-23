@@ -54,11 +54,11 @@ export function useWeighingStation() {
     if (foundData) {
       setTableData(foundData);
       setStandardWeight(foundData.weight);
-      //showNotification('Quét mã thành công!', 'success');
+      showNotification('Quét mã thành công!', 'success');
     } else {
       setTableData(null);
       setStandardWeight(0);
-      //showNotification('Mã không hợp lệ!', 'error');
+      showNotification('Mã không hợp lệ!', 'error');
     }
   };
 
