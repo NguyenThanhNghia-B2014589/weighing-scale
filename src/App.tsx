@@ -1,19 +1,25 @@
+// src/App.tsx
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+
+// Import Header và các trang
+import Header from './components/ui/Header';
 import LoginPage from './components/LoginPage/LoginPage';
 import WeighingStation from './components/WeighingStation/WeighingStation';
-import Header from './components/ui/Header';
 
 function App() {
   return (
-    // Div này sẽ là layout chung cho toàn bộ ứng dụng
-    <div className="min-h-screen bg-sky-200">
+    // Đây là layout chung cho TOÀN BỘ ứng dụng
+    <div className="min-h-screen bg-sky-200 flex flex-col">
       <Header />
-      <main className="pt-[70px]"> {/* Padding để nội dung không bị Header che */}
+      
+      {/* Thẻ <main> sẽ chiếm toàn bộ không gian còn lại */}
+      <main className="flex-grow pt-[70px]">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/WeighingStation" element={<WeighingStation />} />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </main>
     </div>
