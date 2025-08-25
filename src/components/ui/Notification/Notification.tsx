@@ -15,7 +15,7 @@ function Notification({ message, type }: NotificationProps) {
     // Chỉ chạy animation khi có message mới
     if (message) {
       setIsVisible(true);
-      const fadeOutTimer = setTimeout(() => setIsVisible(false), 1500);
+      const fadeOutTimer = setTimeout(() => setIsVisible(false), 1000);
       return () => clearTimeout(fadeOutTimer);
     }
   }, [message]);

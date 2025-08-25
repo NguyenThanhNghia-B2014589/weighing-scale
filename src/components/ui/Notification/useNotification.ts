@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 type NotificationType = 'success' | 'error';
 
 // Custom hook này sẽ quản lý state và logic của thông báo
-export function useNotification(duration: number = 2000) {
+export function useNotification(duration: number = 1000) {
   // State để lưu trữ thông tin của thông báo
   const [notification, setNotification] = useState<{ message: string; type: NotificationType }>({
     message: '',

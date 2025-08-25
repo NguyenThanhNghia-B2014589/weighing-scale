@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWeighingStation } from './useWeighingStation';
 import Notification from '../ui/Notification/Notification';
+import Spinner from '../ui/Spinner/Spinner';
 
 function WeighingStation() {
   // --- GỌI CUSTOM HOOK ĐỂ LẤY TOÀN BỘ LOGIC VÀ STATE ---
@@ -15,6 +16,7 @@ function WeighingStation() {
     minWeight,
     maxWeight,
     isWeightValid,
+    isLoading,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,
@@ -31,7 +33,7 @@ function WeighingStation() {
     : 'text-yellow-400';
 
   // Chuẩn bị dữ liệu cho bảng
-  const tableHeaders = ["Tên phôi keo", "Số Lô", "Số Máy", "Khối lượng mẻ (kg)", "Người Thao Tác", "Thời gian trộn"];
+  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (kg)", "Người Thao Tác", "Thời Gian Trộn"];
   const tableValues = tableData
     ? [tableData.name, tableData.solo, tableData.somay, tableData.weight.toFixed(1), tableData.user, tableData.time]
     : Array(tableHeaders.length).fill('');
@@ -132,9 +134,10 @@ function WeighingStation() {
           />
           <button
             onClick={handleScan}
-            className="bg-green-600 text-white font-bold w-full md:w-auto px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors"
+            className="bg-green-600 text-white font-bold w-full md:w-auto px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-wait flex items-center justify-center"
+            disabled={isLoading}
           >
-            Scan
+            {isLoading ? <Spinner size="md" /> : 'Scan'}
           </button>
         </div>
         

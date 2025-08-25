@@ -1,46 +1,47 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../ui/Notification/useNotification';
 import Notification from '../ui/Notification/Notification';
 import { useAuth } from '../../context/useAuth';
 import { mockUsers } from '../../data/users';
+import Spinner from '../ui/Spinner/Spinner'; // Đảm bảo bạn đã có component này
 
 function LoginPage() {
+  // --- STATE ---
   const [userID, setUserID] = useState('');
   const [password, setPassword] = useState('');
-  const { notificationMessage, notificationType, showNotification } = useNotification();
-  
+  const { showNotification, notificationMessage, notificationType } = useNotification();
   const navigate = useNavigate();
   const { login } = useAuth();
+  
+  // 1. Thêm state isLoading
+  const [isLoading, setIsLoading] = useState(false);
 
-   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  // --- HÀM XỬ LÝ ---
+  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true); // 2. Bật loading
 
-    // 3. Tìm kiếm người dùng trong mảng mockUsers
-    const foundUser = mockUsers.find(
-      (user) => user.userID === userID && user.password === password
-    );
+    setTimeout(() => {
+      const foundUser = mockUsers.find(
+        (user) => user.userID === userID && user.password === password
+      );
 
-    // 4. Kiểm tra kết quả tìm kiếm
-    if (foundUser) {
-      // Nếu tìm thấy người dùng, đăng nhập với thông tin của người đó
-      showNotification(`Chào mừng ${foundUser.userName}!`, 'success');
-      login(foundUser); // Truyền toàn bộ object người dùng đã tìm thấy vào context
-      
-      setTimeout(() => {
-        navigate('/WeighingStation'); // Điều hướng đến trang chủ
-      }, 1500); // 1.5 giây
-
-    } else {
-      showNotification('UserID hoặc mật khẩu không đúng!', 'error');
-    }
+      if (foundUser) {
+        showNotification(`Chào mừng ${foundUser.userName}!`, 'success');
+        login(foundUser);
+        setTimeout(() => navigate('/WeighingStation'), 1500);
+      } else {
+        showNotification('UserID hoặc mật khẩu không đúng!', 'error');
+      }
+      setIsLoading(false); // 3. Tắt loading
+    }, 1000);
   };
 
   return (
     <div className="min-h-auto flex items-center justify-center bg-sky-200 pt-[200px]">
       
       <Notification message={notificationMessage} type={notificationType} />
-
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Đăng Nhập</h2>
         <form onSubmit={handleLogin}>
@@ -56,6 +57,7 @@ function LoginPage() {
               value={userID}
               onChange={(e) => setUserID(e.target.value)}
               required
+              disabled={isLoading} // 4. Vô hiệu hóa khi loading
             />
           </div>
 
@@ -72,15 +74,17 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading} // 4. Vô hiệu hóa khi loading
             />
           </div>
 
           {/* --- Nút Đăng nhập --- */}
           <button
             type="submit"
-            className="w-full bg-[#00446e] text-white font-bold py-3 rounded-lg hover:bg-[#003a60] transition-colors"
+            className="w-full bg-[#00446e] text-white font-bold py-3 rounded-lg hover:bg-[#003a60] transition-colors disabled:bg-[#003a60] disabled:cursor-wait flex items-center justify-center"
+            disabled={isLoading} // 5. Vô hiệu hóa nút và thay đổi giao diện
           >
-            Đăng Nhập
+            {isLoading ? <Spinner size="sm" /> : 'Đăng Nhập'}
           </button>
         </form>
       </div>
