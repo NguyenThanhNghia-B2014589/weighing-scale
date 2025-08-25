@@ -1,8 +1,10 @@
 // src/components/ui/Header.tsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logoIcon from '../../assets/logo.png';
+import adminIcon from '../../assets/admin.png';
+import logoutIcon from '../../assets/logout.png';
 import { useAuth } from '../../context/useAuth'; // 1. Import Custom Hook
 
 function Header() {
@@ -46,24 +48,39 @@ function Header() {
       </div>
 
       {/* 4. HIỂN THỊ CÓ ĐIỀU KIỆN */}
-      {user ? (
-        // Nếu user tồn tại (đã đăng nhập)
+      {user && ( // Chỉ hiển thị menu nếu người dùng đã đăng nhập
         <div className="relative" ref={menuRef}>
           <div className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-white/10" onClick={toggleMenu}>
             <span className="text-white font-medium">{user.userName}</span>
             <span className="text-white">▼</span>
           </div>
+
           {isMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-xl p-2 z-50 ring-1 ring-black ring-opacity-5">
-              <button className="w-full text-left px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100" onClick={handleLogout}>
+            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-xl p-2 z-50 ring-1 ring-black ring-opacity-5 flex flex-col gap-1">
+              
+              {/* 2. HIỂN THỊ CÓ ĐIỀU KIỆN NÚT "CÀI ĐẶT" */}
+              {user.role === 'admin' && (
+                <Link
+                  to="/admin" // Đường dẫn đến trang Cài đặt
+                  className="w-full text-left px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+                  onClick={() => setIsMenuOpen(false)} // Tự động đóng menu khi nhấp
+                >
+                   <img src={adminIcon} alt="Cài đặt" className="h-5 w-5 mr-3" />
+                  Trang Admin
+                </Link>
+              )}
+
+              {/* Nút Đăng xuất */}
+              <button 
+                className="w-full text-left px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 transition-colors flex items-center"
+                onClick={handleLogout}
+              >
+                <img src={logoutIcon} alt="Đăng xuất" className="h-5 w-5 mr-3" />
                 Đăng xuất
               </button>
             </div>
           )}
         </div>
-      ) : (
-        // Nếu user là null (chưa đăng nhập), không hiển thị gì cả
-        null
       )}
     </header>
   );

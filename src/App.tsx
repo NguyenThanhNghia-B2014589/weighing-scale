@@ -7,6 +7,8 @@ import Header from './components/ui/Header';
 import LoginPage from './components/LoginPage/LoginPage';
 import WeighingStation from './components/WeighingStation/WeighingStation';
 import ProtectedRoute from './components/auth/ProtectedRoute'; // 1. Import ProtectedRoute
+import AdminPage from './components/Admin/AdminPage';
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 
 function App() {
   return (
@@ -19,7 +21,7 @@ function App() {
           {/* Trang Login không cần bảo vệ */}
           <Route path="/login" element={<LoginPage />} />
           
-          {/* 2. BỌC TUYẾN ĐƯỜNG WeighingStation BẰNG ProtectedRoute */}
+          {/* BỌC TUYẾN ĐƯỜNG WeighingStation BẰNG ProtectedRoute */}
           <Route 
             path="/WeighingStation" 
             element={
@@ -28,6 +30,16 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          
+          {/* BỌC TUYẾN ĐƯỜNG AdminPage BẰNG ProtectedRoute */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminProtectedRoute>
+                <AdminPage />
+              </AdminProtectedRoute>
+            }>  
+          </Route>
 
           {/* Tuyến đường mặc định vẫn giữ nguyên */}
           <Route path="/" element={<Navigate to="/login" replace />} />
