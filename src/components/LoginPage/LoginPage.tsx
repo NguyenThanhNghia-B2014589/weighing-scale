@@ -40,8 +40,15 @@ function LoginPage() {
 
   return (
     <div className="min-h-auto flex items-center justify-center bg-sky-200 pt-[200px]">
-      
+      {/* Hiển thị thông báo nếu có */}
       <Notification message={notificationMessage} type={notificationType} />
+      {/*Lớp phủ mờ khi có thông báo*/}
+      {notificationMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 z-40"></div>
+      )}
+      
+      <div className={notificationMessage ? 'pointer-events-none opacity-50' : ''}></div>
+
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Đăng Nhập</h2>
         <form onSubmit={handleLogin}>
