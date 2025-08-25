@@ -1,9 +1,12 @@
-import React from 'react';
+//import React, { useEffect, useState } from 'react';
 import { useWeighingStation } from './useWeighingStation';
 import Notification from '../ui/Notification/Notification';
 import Spinner from '../ui/Spinner/Spinner';
+//import DashboardSkeleton from './DashboardSkeleton';
 
 function WeighingStation() {
+
+  //const [isPageLoading, setIsPageLoading] = useState(true);
   // --- GỌI CUSTOM HOOK ĐỂ LẤY TOÀN BỘ LOGIC VÀ STATE ---
   const {
     standardWeight,
@@ -24,6 +27,23 @@ function WeighingStation() {
   } = useWeighingStation();
 
   // --- BIẾN PHÁI SINH CHO UI ---
+
+  /* Thêm useEffect để tắt skeleton sau 1 giây 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000); // 1000ms = 1 giây
+
+    // Dọn dẹp timer khi component bị hủy
+    return () => clearTimeout(timer);
+  }, []); // Mảng rỗng `[]` đảm bảo hiệu ứng này chỉ chạy 1 lần khi component được render lần đầu
+
+  // HIỂN THỊ SKELETON NẾU isPageLoading LÀ TRUE
+  if (isPageLoading) {
+    return <DashboardSkeleton />;
+  } */
+
+
   // Giao diện bị khóa khi và chỉ khi có một thông báo đang hiển thị
   const isUiDisabled = !!notificationMessage;
 
@@ -100,7 +120,7 @@ function WeighingStation() {
             <button 
               className="bg-[#00446e] text-white font-bold w-full md:w-auto px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               onClick={handleSubmit}
-              disabled={!isWeightValid || !tableData}
+              disabled={!isWeightValid || !tableData || isLoading}
             >
               Hoàn tất
             </button>
