@@ -1,12 +1,12 @@
-//import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWeighingStation } from './useWeighingStation';
 import Notification from '../ui/Notification/Notification';
 import Spinner from '../ui/Spinner/Spinner';
-//import DashboardSkeleton from './DashboardSkeleton';
+import DashboardSkeleton from './DashboardSkeleton';
 
 function WeighingStation() {
 
-  //const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   // --- GỌI CUSTOM HOOK ĐỂ LẤY TOÀN BỘ LOGIC VÀ STATE ---
   const {
     standardWeight,
@@ -28,7 +28,7 @@ function WeighingStation() {
 
   // --- BIẾN PHÁI SINH CHO UI ---
 
-  /* Thêm useEffect để tắt skeleton sau 1 giây 
+   //Thêm useEffect để tắt skeleton sau 1 giây 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoading(false);
@@ -41,7 +41,7 @@ function WeighingStation() {
   // HIỂN THỊ SKELETON NẾU isPageLoading LÀ TRUE
   if (isPageLoading) {
     return <DashboardSkeleton />;
-  } */
+  } 
 
 
   // Giao diện bị khóa khi và chỉ khi có một thông báo đang hiển thị
@@ -154,7 +154,7 @@ function WeighingStation() {
           />
           <button
             onClick={handleScan}
-            className="bg-green-600 text-white font-bold w-full md:w-auto px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-wait flex items-center justify-center"
+            className="bg-green-600 text-white font-bold w-full md:w-auto px-12 py-4 rounded-md text-xl hover:bg-green-700 transition-colors disabled:bg-green-600 disabled:cursor-wait flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? <Spinner size="md" /> : 'Scan'}

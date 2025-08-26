@@ -35,7 +35,7 @@ function LoginPage() {
         showNotification('UserID hoặc mật khẩu không đúng!', 'error');
       }
       setIsLoading(false); // 3. Tắt loading
-    }, 1000);
+    }, 1500);
   };
 
   return (
