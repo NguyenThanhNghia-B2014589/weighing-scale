@@ -1,16 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNotification } from '../ui/Notification/useNotification';
-
-// --- DỮ LIỆU GIẢ LẬP VÀ TYPES ---
-const mockApiData = {
-  "123": { code: "123", name: "Phôi keo A", solo: "Lô 1", somay: "Máy 1", weight: 55.0, user: "Nguyễn Văn A", time: "12:00 01/01/2025" },
-  "456": { code: "456", name: "Phôi keo B", solo: "Lô 2", somay: "Máy 3", weight: 62.5, user: "Trần Thị B", time: "14:30 02/01/2025" }
-};
-
-// Định nghĩa kiểu dữ liệu cho thông tin cân
-type WeighingData = {
-  code: string; name: string; solo: string; somay: string; weight: number; user: string; time: string;
-};
+import { mockApiData, WeighingData } from '../../data/weighingData';
 
 // --- ĐỊNH NGHĨA CUSTOM HOOK ---
 export function useWeighingStation() {
