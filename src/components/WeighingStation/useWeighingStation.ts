@@ -42,7 +42,9 @@ export function useWeighingStation() {
   const handleScan = () => {
     setIsLoading(true); // 2. Bật loading
     setTimeout(() => {
-      const foundData = mockApiData[scannedCode as keyof typeof mockApiData];
+      const foundData = Object.values(mockApiData).find(
+        (product) => product.code === scannedCode
+      );
       if (foundData) {
         setTableData(foundData);
         setStandardWeight(foundData.weight);

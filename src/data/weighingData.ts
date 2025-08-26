@@ -13,7 +13,7 @@ export type WeighingData = {
 
 // 2. Định nghĩa và export dữ liệu giả lập
 export const mockApiData: Record<string, WeighingData> = {
-  "123": {
+  "1": {
     code: "123",
     name: "Phôi keo A",
     solo: "Lô 1",
@@ -22,7 +22,7 @@ export const mockApiData: Record<string, WeighingData> = {
     user: "Nguyễn Văn A",
     time: " "
   },
-  "456": {
+  "2": {
     code: "456",
     name: "Phôi keo B",
     solo: "Lô 2",
