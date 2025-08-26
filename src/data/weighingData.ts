@@ -18,17 +18,17 @@ export const mockApiData: Record<string, WeighingData> = {
     name: "Phôi keo A",
     solo: "Lô 1",
     somay: "Máy 1",
-    weight: 55.0,
+    weight: 550.0,
     user: "Nguyễn Văn A",
-    time: "10 phút 30 giây"
+    time: " "
   },
   "456": {
     code: "456",
     name: "Phôi keo B",
     solo: "Lô 2",
     somay: "Máy 3",
-    weight: 62.5,
+    weight: 620.5,
     user: "Trần Thị B",
-    time: "12 phút 15 giây"
+    time: " "
   }
 };

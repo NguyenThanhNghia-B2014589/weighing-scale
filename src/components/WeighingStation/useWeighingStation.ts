@@ -11,8 +11,7 @@ export function useWeighingStation() {
   const [scannedCode, setScannedCode] = useState('');
   const [tableData, setTableData] = useState<WeighingData | null>(null);
   const { showNotification, notificationMessage, notificationType } = useNotification();
-  
-  // 1. Thêm state isLoading
+  const [mixingTime, setMixingTime] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // --- LOGIC TÍNH TOÁN (useMemo) ---
@@ -47,6 +46,7 @@ export function useWeighingStation() {
       if (foundData) {
         setTableData(foundData);
         setStandardWeight(foundData.weight);
+        setMixingTime(null);
         showNotification('Quét mã thành công!', 'success');
       } else {
         setTableData(null);
@@ -61,11 +61,29 @@ export function useWeighingStation() {
     setIsLoading(true); // 2. Bật loading
     setTimeout(() => {
       if (isWeightValid && tableData) {
+
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('vi-VN', {
+          day: '2-digit',   
+          month: '2-digit',  
+          year: 'numeric',   
+          hour: '2-digit',   
+          minute: '2-digit', 
+          hour12: false
+        });
+        setMixingTime(formattedDateTime); // Cập nhật state, bảng sẽ tự re-render với thời gian mới
+
         showNotification('Lưu thành công!', 'success');
-        setCurrentWeight(null);
-        setScannedCode('');
-        setTableData(null);
+        
+        // Reset form sau một khoảng trễ để người dùng kịp thấy kết quả
         setStandardWeight(0);
+        setTimeout(() => {
+          setCurrentWeight(null);
+          setScannedCode('');
+          setTableData(null);
+          
+          setMixingTime(null);
+        }, 3000);
       } else {
         showNotification('Trọng lượng không hợp lệ!', 'error');
       }
@@ -85,7 +103,8 @@ export function useWeighingStation() {
     isWeightValid,
     notificationMessage,
     notificationType,
-    isLoading, // 4. Trả về isLoading
+    isLoading, 
+    mixingTime,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,

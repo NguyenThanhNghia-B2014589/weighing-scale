@@ -20,6 +20,7 @@ function WeighingStation() {
     maxWeight,
     isWeightValid,
     isLoading,
+    mixingTime,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,
@@ -53,9 +54,17 @@ function WeighingStation() {
     : 'text-yellow-400';
 
   // Chuẩn bị dữ liệu cho bảng
-  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (kg)", "Người Thao Tác", "Thời Gian Trộn"];
+  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (g)", "Người Thao Tác", "Thời Gian Trộn"];
   const tableValues = tableData
-    ? [tableData.name, tableData.solo, tableData.somay, tableData.weight.toFixed(1), tableData.user, tableData.time]
+    ? [
+        tableData.name,
+        tableData.solo,
+        tableData.somay,
+        tableData.weight.toFixed(1),
+        tableData.user,
+        // Sử dụng mixingTime nếu nó tồn tại, nếu không, hiển thị '---'
+        mixingTime || '---' 
+      ]
     : Array(tableHeaders.length).fill('');
 
   // --- PHẦN GIAO DIỆN (JSX) ---
@@ -87,7 +96,7 @@ function WeighingStation() {
                   step="0.1"
                   onChange={handleCurrentWeightChange}
                 />
-                <span className="text-2xl ml-2 text-gray-700">Kg</span>
+                <span className="text-3xl ml-2 text-gray-700">g</span>
               </span>    
             </h1>
 
