@@ -1,12 +1,22 @@
 // src/components/AdminPage/AdminPage.tsx
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState,useEffect } from 'react';
 import { mockApiData } from '../../data/weighingData';
 import HistoryCard from '../ui/Card/HistoryCard'
+import AdminPageSkeleton from './AdminPageSkeleton';
 
 function AdminPage() {
   // 1. Thêm state để quản lý nội dung ô tìm kiếm
   const [searchTerm, setSearchTerm] = useState('');
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000); // 1000ms = 1 giây
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Lấy toàn bộ dữ liệu gốc
   const weighingHistory = useMemo(() => Object.values(mockApiData), []);
@@ -32,6 +42,10 @@ function AdminPage() {
       );
     });
   }, [searchTerm, weighingHistory]); // Tính toán lại khi searchTerm hoặc dữ liệu gốc thay đổi
+
+   if (isPageLoading) {
+    return <AdminPageSkeleton />;
+  }
 
   return (
     <div className="p-4 md:p-8">
@@ -64,7 +78,6 @@ function AdminPage() {
             <HistoryCard 
               key={item.code + index} 
               data={item}
-              searchTerm={searchTerm} // 5. Truyền searchTerm xuống component con
             />
           ))
         ) : (
