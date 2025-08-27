@@ -1,7 +1,7 @@
 // src/components/AdminPage/HistoryCard.tsx
 
 import React from 'react';
-import { WeighingData } from '../../data/weighingData';
+import { WeighingData } from '../../../data/weighingData';
 
 // Component này nhận dữ liệu của một lần cân qua props
 interface HistoryCardProps {

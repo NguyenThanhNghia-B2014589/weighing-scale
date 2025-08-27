@@ -8,6 +8,10 @@ input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+/* Ẩn thanh cuộn cho các trình duyệt Chrome, Safari, Edge và Opera */
+body::-webkit-scrollbar {
+  display: none;
+}
 
 /* Tự nhiên thấy phóng to lên nó đẹp hơn */
 /* Chỉ phóng to trên màn hình lớn */

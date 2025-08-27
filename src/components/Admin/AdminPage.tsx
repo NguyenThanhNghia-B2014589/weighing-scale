@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { mockApiData } from '../../data/weighingData';
-import HistoryCard from '../Card/HistoryCard'; 
+import HistoryCard from '../ui/Card/HistoryCard'; 
 
 function AdminPage() {
   // Chuyển đổi object dữ liệu thành một mảng
