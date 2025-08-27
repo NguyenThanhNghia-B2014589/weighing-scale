@@ -8,6 +8,7 @@ export type WeighingData = {
   somay: string;
   weight: number;
   user: string;
+  finalWeight: number;
   time: string;
 };
 
@@ -20,6 +21,7 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 1",
     weight: 550.0,
     user: "Nguyễn Văn A",
+    finalWeight: 550.0,
     time: "8:20 01/01/2024"
   },
   "2": {
@@ -29,7 +31,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/02/2024"
   },
   "3": {
     code: "789",
@@ -38,7 +41,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 1",
     weight: 550.0,
     user: "Nguyễn Văn A",
-    time: "8:20 01/01/2024"
+    finalWeight: 550.0,
+    time: "8:20 01/03/2024"
   },
   "4": {
     code: "abc",
@@ -47,7 +51,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/04/2024"
   },
   "5": {
     code: "cba",
@@ -56,7 +61,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 1",
     weight: 550.0,
     user: "Nguyễn Văn A",
-    time: "8:20 01/01/2024"
+    finalWeight: 550.0,
+    time: "8:20 01/05/2024"
   },
   "6": {
     code: "321",
@@ -65,7 +71,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/06/2024"
   },
   "7": {
     code: "654",
@@ -74,7 +81,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 1",
     weight: 550.0,
     user: "Nguyễn Văn A",
-    time: "8:20 01/01/2024"
+    finalWeight: 550.0,
+    time: "8:20 01/06/2024"
   },
   "8": {
     code: "987",
@@ -83,7 +91,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/08/2024"
   },
   "9": {
     code: "987",
@@ -92,7 +101,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/09/2024"
   },
   "10": {
     code: "987",
@@ -101,7 +111,8 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/10/2024"
   },
   "11": {
     code: "987",
@@ -110,6 +121,7 @@ export const mockApiData: Record<string, WeighingData> = {
     somay: "Máy 3",
     weight: 620.5,
     user: "Trần Thị B",
-    time: "8:20 01/01/2024"
+    finalWeight: 620.5,
+    time: "8:20 01/11/2024"
   },
 };
