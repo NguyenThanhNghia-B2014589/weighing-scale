@@ -26,7 +26,7 @@ function HistoryCard({ data }: HistoryCardProps) {
     <div className="bg-[#90c5ab] rounded-lg p-4 shadow-md text-black font-semibold">
       {/* Hàng thông tin trên cùng */}
       <div className="flex justify-between items-center mb-4 text-sm">
-        <span>Số thẻ: <span className="font-bold">{data.code}</span></span>
+        <span>Số thẻ: <span className="font-bold">{data.userID}</span></span>
         <span>Người thao tác: <span className="font-bold">{data.user}</span></span>
         <span>Thời gian cân: <span className="font-bold">{data.time}</span></span>
       </div>
