@@ -21,6 +21,7 @@ function WeighingStation() {
     isWeightValid,
     isLoading,
     mixingTime,
+    currentUser,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,
@@ -54,14 +55,14 @@ function WeighingStation() {
     : 'text-yellow-400';
 
   // Chuẩn bị dữ liệu cho bảng
-  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (g)", "Người Thao Tác", "Thời Gian Trộn"];
+  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (g)", "Người Thao Tác", "Thời Gian Cân"];
   const tableValues = tableData
     ? [
         tableData.name,
         tableData.solo,
         tableData.somay,
         tableData.weight.toFixed(1),
-        tableData.user,
+        currentUser?.userName || '',
         // Sử dụng mixingTime nếu nó tồn tại, nếu không, hiển thị '---'
         mixingTime || '---' 
       ]

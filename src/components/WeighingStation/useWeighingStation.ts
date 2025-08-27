@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNotification } from '../ui/Notification/useNotification';
 import { mockApiData, WeighingData } from '../../data/weighingData';
+import { useAuth } from '../../context/useAuth';
 
 // --- ĐỊNH NGHĨA CUSTOM HOOK ---
 export function useWeighingStation() {
@@ -13,6 +14,7 @@ export function useWeighingStation() {
   const { showNotification, notificationMessage, notificationType } = useNotification();
   const [mixingTime, setMixingTime] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   // --- LOGIC TÍNH TOÁN (useMemo) ---
   // Tính toán trọng lượng tối thiểu và tối đa dựa trên độ lệch
@@ -107,6 +109,7 @@ export function useWeighingStation() {
     notificationType,
     isLoading, 
     mixingTime,
+    currentUser: user,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,
