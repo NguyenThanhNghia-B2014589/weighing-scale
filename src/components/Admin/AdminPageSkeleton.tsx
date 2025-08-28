@@ -33,6 +33,8 @@ function AdminPageSkeleton() {
         <SkeletonHistoryCard />
         <SkeletonHistoryCard />
         <SkeletonHistoryCard />
+        <SkeletonHistoryCard />
+        <SkeletonHistoryCard />
       </div>
     </div>
   );
