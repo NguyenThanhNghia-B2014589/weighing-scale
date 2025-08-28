@@ -12,7 +12,15 @@ import type { ListRowProps } from 'react-virtualized';
 function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [debouncedTerm, setDebouncedTerm] = useState('');
   
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm); // update sau 300ms
+    }, 300);
+
+    return () => clearTimeout(timer); // clear khi gõ tiếp
+  }, [searchTerm]);
   
   useEffect(() => {
     const timer = setTimeout(() => setIsPageLoading(false), 1000);
@@ -23,7 +31,7 @@ function AdminPage() {
 
   const filteredHistory = useMemo(() => {
     if (!searchTerm) return weighingHistory;
-    const lowercasedFilter = searchTerm.toLowerCase();
+    const lowercasedFilter = debouncedTerm.toLowerCase();
 
     return weighingHistory.filter(item => {
       return (
@@ -34,7 +42,7 @@ function AdminPage() {
         item.user.toLowerCase().includes(lowercasedFilter)
       );
     });
-  }, [searchTerm, weighingHistory]);
+  }, [debouncedTerm, searchTerm, weighingHistory]);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const rowHeight = isMobile ? 280 : 180;
