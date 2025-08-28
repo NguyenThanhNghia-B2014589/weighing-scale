@@ -1,33 +1,23 @@
 // src/components/AdminPage/AdminPage.tsx
 
-import React, { useMemo, useState,useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { mockApiData } from '../../data/weighingData';
-import HistoryCard from '../ui/Card/HistoryCard'
+import HistoryCard from '../ui/Card/HistoryCard';
 import AdminPageSkeleton from './AdminPageSkeleton';
 
 function AdminPage() {
-  // 1. Thêm state để quản lý nội dung ô tìm kiếm
   const [searchTerm, setSearchTerm] = useState('');
   const [isPageLoading, setIsPageLoading] = useState(true);
-
+  
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 1000); // 1000ms = 1 giây
-
+    const timer = setTimeout(() => setIsPageLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Lấy toàn bộ dữ liệu gốc
   const weighingHistory = useMemo(() => Object.values(mockApiData), []);
 
-  // 2. Lọc dữ liệu dựa trên searchTerm
   const filteredHistory = useMemo(() => {
-    // Nếu ô tìm kiếm rỗng, trả về toàn bộ lịch sử
-    if (!searchTerm) {
-      return weighingHistory;
-    }
-    
+    if (!searchTerm) return weighingHistory;
     const lowercasedFilter = searchTerm.toLowerCase();
 
     // Lọc qua mảng, giữ lại những mục thỏa mãn điều kiện
@@ -43,23 +33,22 @@ function AdminPage() {
     });
   }, [searchTerm, weighingHistory]); // Tính toán lại khi searchTerm hoặc dữ liệu gốc thay đổi
 
-   if (isPageLoading) {
-    return <AdminPageSkeleton />;
-  }
+  if (isPageLoading) return <AdminPageSkeleton />;
 
   return (
-    <div className="p-4 md:p-8">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+  <div className="pl-4 pr-4 pb-4 h-full flex flex-col">
+    {/* Header sticky */}
+    <div className="sticky top-[70px] bg-sky-200 py-4 z-10">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 className="text-3xl font-bold text-gray-800">
           Trang Quản Trị - Lịch Sử Cân
         </h1>
-        
-        {/* 3. THÊM Ô INPUT TÌM KIẾM */}
         <div className="relative w-full md:w-1/3">
           <input
             type="text"
             placeholder="Tìm kiếm theo mã, tên, lô, máy..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-sky-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -70,22 +59,24 @@ function AdminPage() {
           </div>
         </div>
       </div>
-      
-      {/* 4. HIỂN THỊ DANH SÁCH ĐÃ ĐƯỢC LỌC */}
-      <div className="flex flex-col gap-6">
-        {filteredHistory.length > 0 ? (
-          filteredHistory.map((item, index) => (
-            <HistoryCard 
-              key={item.code + index} 
-              data={item}
-            />
-          ))
-        ) : (
-          <p className="text-center text-gray-500 mt-10">Không tìm thấy kết quả nào.</p>
-        )}
-      </div>
     </div>
-  );
+
+    {/* List */}
+    <div className="mt-4 flex-1 overflow-y-auto">
+      {filteredHistory.length > 0 ? (
+        <div className="flex flex-col gap-4">
+          {filteredHistory.map((item, index) => (
+            <HistoryCard key={item.code + index} data={item} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 mt-10">
+          Không tìm thấy kết quả nào.
+        </p>
+      )}
+    </div>
+  </div>
+);
 }
 
 export default AdminPage;
