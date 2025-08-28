@@ -1,56 +1,22 @@
-// src/components/AdminPage/AdminPage.tsx
+import React from "react";
+import { List, AutoSizer } from "react-virtualized";
+import "react-virtualized/styles.css";
 
-import React, { useMemo, useState, useEffect } from 'react';
-import { mockApiData } from '../../data/weighingData';
-import HistoryCard from '../ui/Card/HistoryCard';
-import AdminPageSkeleton from './AdminPageSkeleton';
-import { List, AutoSizer } from 'react-virtualized'; // 👈 import từ react-virtualized
-import 'react-virtualized/styles.css'; // 👈 nhớ import CSS mặc định
-import { useMediaQuery } from "react-responsive";
-import type { ListRowProps } from 'react-virtualized';
+import HistoryCard from "../ui/Card/HistoryCard";
+import AdminPageSkeleton from "./AdminPageSkeleton";
+import type { ListRowProps } from "react-virtualized";
+import { useAdminPageLogic } from "../../hooks/useAdminPage";
 
 function AdminPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isPageLoading, setIsPageLoading] = useState(true);
-  const [debouncedTerm, setDebouncedTerm] = useState('');
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm); // update sau 300ms
-    }, 300);
-
-    return () => clearTimeout(timer); // clear khi gõ tiếp
-  }, [searchTerm]);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => setIsPageLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const weighingHistory = useMemo(() => Object.values(mockApiData), []);
-
-  const filteredHistory = useMemo(() => {
-    if (!searchTerm) return weighingHistory;
-    const lowercasedFilter = debouncedTerm.toLowerCase();
-
-    return weighingHistory.filter(item => {
-      return (
-        item.code.toLowerCase().includes(lowercasedFilter) ||
-        item.name.toLowerCase().includes(lowercasedFilter) ||
-        item.solo.toLowerCase().includes(lowercasedFilter) ||
-        item.somay.toLowerCase().includes(lowercasedFilter) ||
-        item.user.toLowerCase().includes(lowercasedFilter)
-      );
-    });
-  }, [debouncedTerm, searchTerm, weighingHistory]);
-
-  const isMobile = useMediaQuery({ maxWidth: 767 });
-  const rowHeight = isMobile ? 280 : 180;
+  const {
+    searchTerm,
+    setSearchTerm,
+    isPageLoading,
+    filteredHistory,
+    rowHeight,
+  } = useAdminPageLogic();
 
   if (isPageLoading) return <AdminPageSkeleton />;
-
-  // 👇 Hàm render mỗi row (bắt buộc phải có)
- 
 
   const rowRenderer = ({ index, key, style }: ListRowProps) => (
     <div key={key} style={style} className="p-2">
@@ -76,8 +42,18 @@ function AdminPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
@@ -85,7 +61,7 @@ function AdminPage() {
       </div>
 
       {/* List */}
-      <div className="mt-4 flex-1 min-h-[780px] ">
+      <div className="mt-4 flex-1 min-h-[780px]">
         {filteredHistory.length > 0 ? (
           <AutoSizer>
             {({ height, width }) => (
@@ -93,7 +69,7 @@ function AdminPage() {
                 width={width}
                 height={height}
                 rowCount={filteredHistory.length}
-                rowHeight={rowHeight} // 👈 chiều cao mỗi card
+                rowHeight={rowHeight}
                 rowRenderer={rowRenderer}
                 className="no-scrollbar"
               />

@@ -104,7 +104,7 @@ export const mockApiData: Record<string, WeighingData> = {
     time: "8:20 01/08/2024"
   },
   "9": {
-    code: "987",
+    code: "346",
     name: "Phôi keo B",
     solo: "Lô 2",
     somay: "Máy 3",
@@ -115,7 +115,7 @@ export const mockApiData: Record<string, WeighingData> = {
     time: "8:20 01/09/2024"
   },
   "10": {
-    code: "987",
+    code: "912",
     name: "Phôi keo B",
     solo: "Lô 2",
     somay: "Máy 3",
@@ -126,7 +126,7 @@ export const mockApiData: Record<string, WeighingData> = {
     time: "8:20 01/10/2024"
   },
   "11": {
-    code: "987",
+    code: "997",
     name: "Phôi keo B",
     solo: "Lô 2",
     somay: "Máy 3",

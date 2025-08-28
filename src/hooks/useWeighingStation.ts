@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { useNotification } from '../ui/Notification/useNotification';
-import { mockApiData, WeighingData } from '../../data/weighingData';
-import { useAuth } from '../../context/useAuth';
+import { useNotification } from './useNotification';
+import { mockApiData, WeighingData } from '../data/weighingData';
+import { useAuth } from './useAuth';
 
 // --- ĐỊNH NGHĨA CUSTOM HOOK ---
 export function useWeighingStation() {

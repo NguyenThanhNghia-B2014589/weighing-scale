@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logoIcon from '../../assets/logo.png';
 import adminIcon from '../../assets/admin.png';
 import logoutIcon from '../../assets/logout.png';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

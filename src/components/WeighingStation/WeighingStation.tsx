@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWeighingStation } from './useWeighingStation';
+import { useWeighingStation } from '../../hooks/useWeighingStation';
 import Notification from '../ui/Notification/Notification';
 import Spinner from '../ui/Spinner/Spinner';
 import DashboardSkeleton from './DashboardSkeleton';

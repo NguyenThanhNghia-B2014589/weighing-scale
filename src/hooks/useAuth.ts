@@ -1,7 +1,7 @@
 // src/context/useAuth.ts
 
 import { useContext } from 'react';
-import AuthContext from './AuthContext';
+import AuthContext from '../context/AuthContext';
 
 // Custom Hook để dễ dàng sử dụng Context
 export function useAuth() {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../ui/Notification/useNotification';
+import { useNotification } from '../../hooks/useNotification';
 import Notification from '../ui/Notification/Notification';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { mockUsers } from '../../data/users';
 import Spinner from '../ui/Spinner/Spinner'; // Đảm bảo bạn đã có component này
 
