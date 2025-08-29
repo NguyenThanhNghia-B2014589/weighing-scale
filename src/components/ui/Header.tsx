@@ -49,7 +49,7 @@ function Header() {
           <img src={logoIcon} alt="Logo" className="h-[35px]" />
         </Link>
         <h1 className="text-white sm:text-2xl text-xl font-bold tracking-wide">
-          LƯU TRÌNH CAO SU XƯỞNG ĐẾ
+          LƯU TRÌNH CÂN KEO XƯỞNG ĐẾ
         </h1>
       </div>
 
