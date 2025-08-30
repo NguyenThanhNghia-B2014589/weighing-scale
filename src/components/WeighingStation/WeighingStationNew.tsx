@@ -1,9 +1,10 @@
 // src/components/WeighingStation/WeighingStationModern.tsx
 
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState} from "react";
 import { useWeighingStation } from "../../hooks/useWeighingStation";
 import Spinner from '../ui/Spinner/Spinner';
 import Notification from '../ui/Notification/Notification';
+import WeighingStationSkeleton from "./WeighingStationSkeleton";
 
 // --- COMPONENT GIAO DIỆN MỚI ---
 function WeighingStationNew() {
@@ -28,8 +29,19 @@ function WeighingStationNew() {
     handleScan,
     handleSubmit,
   } = useWeighingStation();
-  const isUiDisabled = !!notificationMessage;
 
+  const isUiDisabled = !!notificationMessage;
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+
+  // useEffect để tắt skeleton sau 1 giây
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000); // 1000ms = 1 giây
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // --- CÁC GIÁ TRỊ PHÁI SINH (Sử dụng dữ liệu từ hook) ---
   const deviationPct = useMemo(() => {
@@ -37,11 +49,14 @@ function WeighingStationNew() {
     return +(((currentWeight - standardWeight) / standardWeight) * 100).toFixed(1);
   }, [currentWeight, standardWeight]);
 
-    // Chuẩn bị dữ liệu cho bảng
+  // HIỂN THỊ SKELETON NẾU isPageLoading LÀ TRUE
+  if (isPageLoading) {
+    return <WeighingStationSkeleton />;
+  }
 
   return (
     
-    <div className="bg-sky text-slate-800 "> {/*lg:pt-[40px] */}
+    <div className="bg-sky text-slate-800 ">
       <Notification 
         message={notificationMessage}
         type={notificationType}
@@ -55,7 +70,7 @@ function WeighingStationNew() {
         {/* Title Row */}
         
 
-        {/* --- KHU VỰC "WEIGHT + STATS" ĐÃ ĐƯỢC TÁI CẤU TRÚC --- */}
+        {/* --- KHU VỰC "WEIGHT + STATS" --- */}
         <section className="flex flex-col lg:flex-row gap-5 mb-6">
           
           {/* Cột trái: Big weight card */}
@@ -119,10 +134,9 @@ function WeighingStationNew() {
         
         <div className="flex items-center justify-end mb-6">
           <button
-            className="w-full md:w-40 flex justify-center rounded-xl bg-[#00446e] px-40 py-3 text-white font-bold hover:bg-[#0b7abe] transition-colors shadow-sm disabled:bg-slate-300 disabled:text-slate-500 active:scale-95 disabled:cursor-not-allowed whitespace-nowrap"
-                       
-            //className="bg-[#00446e] text-white font-bold w-full md:w-auto px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  
+            className="w-full md:w-40 flex justify-center rounded-xl bg-[#00446e] px-40 py-3 text-white font-bold hover:bg-[#0b7abe] 
+                       transition-colors shadow-sm disabled:bg-slate-300 disabled:text-slate-500 active:scale-95 disabled:cursor-not-allowed whitespace-nowrap"
+                
             onClick={handleSubmit}
             disabled={!isWeightValid || !tableData || isLoading }
           >
@@ -131,21 +145,32 @@ function WeighingStationNew() {
         </div>
 
         {/* Detail table */}
-        <section className="rounded-xl bg-white shadow-md overflow-hidden mb-6">
+      <section className="rounded-xl bg-white shadow-md overflow-hidden mb-6">
         
-          <div className="hidden md:grid grid-cols-6 border-t border-r border-gray-300">
-            {tableHeaders.map((header) => ( <div key={header} className="bg-sky-400 text-black font-semibold text-center p-3 border-b border-l border-gray-300">{header}</div> ))}
-          </div>
+        {/* Phần Header của bảng */}
+        <div className="hidden md:grid grid-cols-6 border-t border-r border-gray-300">
+          {tableHeaders.map((header) => ( <div key={header} className="bg-sky-400 text-black font-semibold text-center p-3 border-b border-l border-gray-300">{header}</div> ))}
+        </div>
+
+        {/* --- PHẦN BODY CỦA BẢNG --- */}
+        {tableData ? (
           <div className="grid grid-cols-1 md:grid-cols-6 border-r border-b border-gray-300 md:border-t-0">
             {tableValues.map((value, index) => (
-              <div key={index} className="bg-gray-100 p-3 md:h-20 border-t border-l border-gray-300 md:border-t-0 flex items-center justify-start md:justify-center font-medium text-gray-800">
+              <div 
+                key={index} 
+                className="bg-gray-100 p-3 md:min-h-20 border-t border-l border-gray-300 md:border-t-0 flex items-start md:items-center justify-start md:justify-center font-medium text-gray-800 break-words"
+              >
                 <span className="font-bold md:hidden mr-2">{tableHeaders[index]}: </span>
                 {value}
               </div>
             ))}
           </div>
-        
-        </section>
+        ) : (
+          <div className="bg-gray-100 p-3 md:h-20 border-t border-l border-r border-b border-gray-300 md:border-t-0 flex items-center justify-center text-slate-400 italic">
+            Vui lòng quét mã để hiển thị thông tin
+          </div>
+        )}
+      </section>
 
         {/* Scan area */}
         <section className="rounded-xl bg-white shadow-md p-5 sm:p-6">
@@ -173,7 +198,7 @@ function WeighingStationNew() {
   );
 }
 
-// --- CÁC COMPONENT PHỤ (giữ nguyên từ code của bạn) ---
+// --- CÁC COMPONENT PHỤ ---
 
 function StatCard({ label, value, subtle = false }: { label: string; value: string | number; subtle?: boolean }) {
   return (

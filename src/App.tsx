@@ -6,7 +6,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/ui/Header';
 import LoginPage from './components/LoginPage/LoginPage';
 import WeighingStation from './components/WeighingStation/WeighingStation';
-import WeighingStationNew from './components/WeighingStation/WeighingStationModern'; 
+import WeighingStationNew from './components/WeighingStation/WeighingStationNew'; 
 import ProtectedRoute from './components/auth/ProtectedRoute'; // 1. Import ProtectedRoute
 import AdminPage from './components/Admin/AdminPage';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
