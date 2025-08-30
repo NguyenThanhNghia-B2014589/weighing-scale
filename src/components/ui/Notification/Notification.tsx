@@ -10,7 +10,7 @@ interface NotificationProps {
 
 function Notification({ message, type }: NotificationProps) {
   // --- PHẦN GIAO DIỆN ---
-  const bgColor = type === 'success' ? 'bg-[#B4D080]' : 'bg-[#F97316]';
+  const bgColor = type === 'success' ? 'bg-[#90D080FF]' : 'bg-[#F95E16FF]';
   const icon = type === 'success' 
     ? (
       <svg className="h-16 w-16 text-white mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

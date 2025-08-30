@@ -45,7 +45,7 @@ function Header() {
   return (
     <header className="fixed top-0 left-0 w-full h-[70px] bg-[#064469] z-50 flex items-center justify-between px-6 shadow-lg">
       <div className="flex items-center gap-4">
-        <Link to="/WeighingStation" className="flex items-center gap-4">
+        <Link to="/WeighingStationNew" className="flex items-center gap-4">
           <img src={logoIcon} alt="Logo" className="h-[35px]" />
         </Link>
         <h1 className="text-white sm:text-2xl text-xl font-bold tracking-wide">
