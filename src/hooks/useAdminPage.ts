@@ -37,7 +37,7 @@ export function useAdminPageLogic() {
 
   // Responsive rowHeight
   const isMobile = useMediaQuery({ maxWidth: 767 });
-  const rowHeight = isMobile ? 280 : 180;
+  const rowHeight = isMobile ? 320 : 180;
 
   return {
     searchTerm,

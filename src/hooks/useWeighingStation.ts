@@ -7,15 +7,31 @@ import { useAuth } from './useAuth';
 export function useWeighingStation() {
   // --- STATE ---
   const [standardWeight, setStandardWeight] = useState(0.0);
-  const [deviationPercent, setDeviationPercent] = useState(3);
+  const [deviationPercent] = useState(3);
   const [currentWeight, setCurrentWeight] = useState<number | null>(null);
   const [scannedCode, setScannedCode] = useState('');
   const [tableData, setTableData] = useState<WeighingData | null>(null);
   const { showNotification, notificationMessage, notificationType } = useNotification();
   const [mixingTime, setMixingTime] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
   const { user } = useAuth();
 
+
+    // Chuẩn bị dữ liệu cho bảng
+  const tableHeaders = ["Tên Phôi Keo", "Số Lô", "Số Máy", "Khối Lượng Mẻ (g)", "Người Thao Tác", "Thời Gian Cân"];
+  const tableValues = tableData
+    ? [
+        tableData.name,
+        tableData.solo,
+        tableData.somay,
+        tableData.weight.toFixed(1),
+        user?.userName || '',
+        // Sử dụng mixingTime nếu nó tồn tại, nếu không, hiển thị '---'
+        mixingTime || '---' 
+      ]
+    : Array(tableHeaders.length).fill('');
+    
   // --- LOGIC TÍNH TOÁN (useMemo) ---
   // Tính toán trọng lượng tối thiểu và tối đa dựa trên độ lệch
   const { minWeight, maxWeight } = useMemo(() => {
@@ -62,7 +78,7 @@ export function useWeighingStation() {
   };
   // Xử lý sự kiện lưu dữ liệu
   const handleSubmit = () => {
-    setIsLoading(true); // 2. Bật loading
+    setIsSubmit(true); // 2. Bật loading
     setTimeout(() => {
       if (isWeightValid && tableData) {
 
@@ -91,7 +107,7 @@ export function useWeighingStation() {
       } else {
         showNotification('Trọng lượng không hợp lệ!', 'error');
       }
-      setIsLoading(false); // 3. Tắt loading
+      setIsSubmit(false); // 3. Tắt loading
     }, 1000);
   };
   
@@ -107,9 +123,12 @@ export function useWeighingStation() {
     isWeightValid,
     notificationMessage,
     notificationType,
-    isLoading, 
+    isLoading,
+    isSubmit,
     mixingTime,
     currentUser: user,
+    tableHeaders,
+    tableValues,
     handleCodeChange,
     handleCurrentWeightChange,
     handleScan,

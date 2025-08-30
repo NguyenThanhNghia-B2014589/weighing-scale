@@ -30,7 +30,7 @@ function LoginPage() {
       if (foundUser) {
         showNotification(`Chào mừng ${foundUser.userName}!`, 'success');
         login(foundUser);
-        setTimeout(() => navigate('/WeighingStation'), 1500);
+        setTimeout(() => navigate('/WeighingStationNew'), 1500);
       } else {
         showNotification('UserID hoặc mật khẩu không đúng!', 'error');
       }

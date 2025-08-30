@@ -20,6 +20,7 @@ function WeighingStation() {
     maxWeight,
     isWeightValid,
     isLoading,
+    isSubmit,
     mixingTime,
     currentUser,
     handleCodeChange,
@@ -130,9 +131,9 @@ function WeighingStation() {
             <button 
               className="bg-[#00446e] text-white font-bold w-full md:w-auto px-8 py-3 rounded-lg shadow-md hover:bg-[#003a60] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               onClick={handleSubmit}
-              disabled={!isWeightValid || !tableData || isLoading}
+              disabled={!isWeightValid || !tableData || isSubmit}
             >
-              Hoàn tất
+              {isSubmit ? 'Đang lưu...' : 'Hoàn tất'}
             </button>
           </div>
         </div>
