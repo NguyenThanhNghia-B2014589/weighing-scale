@@ -1,10 +1,10 @@
 import React from "react";
-import { List, AutoSizer } from "react-virtualized";
+import { List, AutoSizer, CellMeasurer } from "react-virtualized";
 import "react-virtualized/styles.css";
 
 import HistoryCard from "../ui/Card/HistoryCard";
 import AdminPageSkeleton from "./AdminPageSkeleton";
-import type { ListRowProps } from "react-virtualized";
+
 import { useAdminPageLogic } from "../../hooks/useAdminPage";
 
 function AdminPage() {
@@ -13,19 +13,15 @@ function AdminPage() {
     setSearchTerm,
     isPageLoading,
     filteredHistory,
-    rowHeight,
+    cache,
   } = useAdminPageLogic();
 
   if (isPageLoading) return <AdminPageSkeleton />;
 
-  const rowRenderer = ({ index, key, style }: ListRowProps) => (
-    <div key={key} style={style} className="p-2">
-      <HistoryCard data={filteredHistory[index]} />
-    </div>
-  );
+
 
   return (
-    <div className="pl-4 pr-4 pb-4 h-full flex flex-col">
+    <div className="pl-4 pr-4 pb-4 h-full flex flex-col flex-shrink-0">
       {/* Header sticky */}
       <div className="sticky top-[70px] bg-sky-200 py-4 z-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -61,7 +57,7 @@ function AdminPage() {
       </div>
 
       {/* List */}
-      <div className="mt-4 flex-1 min-h-[780px]">
+      <div className="mt-4 flex-1 min-h-screen">
         {filteredHistory.length > 0 ? (
           <AutoSizer>
             {({ height, width }) => (
@@ -69,8 +65,30 @@ function AdminPage() {
                 width={width}
                 height={height}
                 rowCount={filteredHistory.length}
-                rowHeight={rowHeight}
-                rowRenderer={rowRenderer}
+                rowHeight={cache.rowHeight}
+                rowRenderer={({ index, key, parent, style }) => {
+                  const item = filteredHistory[index];
+                  return (
+                    <CellMeasurer
+                      cache={cache}
+                      columnIndex={0}
+                      key={key}
+                      parent={parent}
+                      rowIndex={index}
+                    >
+                      {({  registerChild }) => (
+                        <div ref={registerChild} style={{
+                          ...style,
+                          paddingBottom: '10px' 
+                        }}>
+        
+                          <HistoryCard data={item}/>
+                          
+                        </div>
+                      )}
+                    </CellMeasurer>
+                  );
+                }}
                 className="no-scrollbar"
               />
             )}

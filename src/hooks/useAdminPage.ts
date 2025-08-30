@@ -2,12 +2,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { mockApiData } from "../data/weighingData";
 import { useMediaQuery } from "react-responsive";
+import { CellMeasurerCache } from 'react-virtualized';
 
 export function useAdminPageLogic() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [debouncedTerm, setDebouncedTerm] = useState("");
-
+  
+  const cache = new CellMeasurerCache({
+    fixedWidth: true, // Chiều rộng cố định
+    defaultHeight: 320 // Chiều cao mặc định ban đầu
+  });
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -45,5 +50,6 @@ export function useAdminPageLogic() {
     isPageLoading,
     filteredHistory,
     rowHeight,
+    cache,
   };
 }
