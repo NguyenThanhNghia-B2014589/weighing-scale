@@ -1,24 +1,48 @@
 import React from "react";
 import { List, AutoSizer, CellMeasurer } from "react-virtualized";
-import "react-virtualized/styles.css";
+import "react-virtualized/styles.css"; // Đảm bảo bạn đã import file CSS này
+import { motion} from 'framer-motion';
 
 import HistoryCard from "../ui/Card/HistoryCard";
 import AdminPageSkeleton from "./AdminPageSkeleton";
+import type { ListRowProps } from "react-virtualized";
+import { useAdminPageLogic } from "../../hooks/useAdminPage"; 
 
-import { useAdminPageLogic } from "../../hooks/useAdminPage";
+// Biến HistoryCard thành một component có thể được animate bởi Framer Motion
+const AnimatedHistoryCard = motion(HistoryCard);
 
 function AdminPage() {
   const {
     searchTerm,
-    setSearchTerm,
+    cache,
     isPageLoading,
     filteredHistory,
-    cache,
+    cardVariants,
+    setSearchTerm,
   } = useAdminPageLogic();
 
-  if (isPageLoading) return <AdminPageSkeleton />;
+  // Hiển thị bộ khung trong khi tải trang
+  if (isPageLoading) return <AdminPageSkeleton />
 
-
+  const rowRenderer = ({ index, key, parent, style }: ListRowProps) => {
+    const item = filteredHistory[index];
+    return (
+      <CellMeasurer cache={cache} columnIndex={0} key={key} parent={parent} rowIndex={index}>
+        {({ registerChild }) => (
+          <div ref={registerChild} style={style} className="p-2">
+            <AnimatedHistoryCard
+              data={item}
+              variants={cardVariants} // 2. SỬ DỤNG variants TỪ HOOK
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              layout
+            />
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  };
 
   return (
     <div className="pl-4 pr-4 pb-4 h-full flex flex-col flex-shrink-0">
@@ -65,31 +89,10 @@ function AdminPage() {
                 width={width}
                 height={height}
                 rowCount={filteredHistory.length}
-                rowHeight={cache.rowHeight}
-                rowRenderer={({ index, key, parent, style }) => {
-                  const item = filteredHistory[index];
-                  return (
-                    <CellMeasurer
-                      cache={cache}
-                      columnIndex={0}
-                      key={key}
-                      parent={parent}
-                      rowIndex={index}
-                    >
-                      {({  registerChild }) => (
-                        <div ref={registerChild} style={{
-                          ...style,
-                          paddingBottom: '10px' 
-                        }}>
-        
-                          <HistoryCard data={item}/>
-                          
-                        </div>
-                      )}
-                    </CellMeasurer>
-                  );
-                }}
+                rowHeight={cache.rowHeight} // Lấy chiều cao động từ cache
+                rowRenderer={rowRenderer}
                 className="no-scrollbar"
+                data={filteredHistory} // Giúp List biết khi nào cần re-render
               />
             )}
           </AutoSizer>
