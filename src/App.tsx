@@ -8,6 +8,7 @@ import LoginPage from './components/LoginPage/LoginPage';
 import WeighingStation from './components/WeighingStation/WeighingStation';
 import WeighingStationNew from './components/WeighingStation/WeighingStationNew'; 
 import ProtectedRoute from './components/auth/ProtectedRoute'; // 1. Import ProtectedRoute
+import RedirectIfAuth from './components/auth/RedirectIfAuth';
 import AdminPage from './components/Admin/AdminPage';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 
@@ -21,7 +22,14 @@ function App() {
       <main className="flex-grow pt-[70px]">
         <Routes>
           {/* Trang Login không cần bảo vệ */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route 
+            path="/login" 
+            element={
+              <RedirectIfAuth>
+                <LoginPage />
+              </RedirectIfAuth>
+            } 
+          />
           
           {/* BỌC TUYẾN ĐƯỜNG WeighingStation BẰNG ProtectedRoute */}
           <Route 
