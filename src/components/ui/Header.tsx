@@ -1,9 +1,10 @@
 // src/components/ui/Header.tsx
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { motion } from 'framer-motion';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import  NavLink  from './NavLink/NavLink';
+import { useHeader } from '../../hooks/useHeader';
+
 
 import logoIcon from '../../assets/logo.png';
 import logoutIcon from '../../assets/logout.png';
@@ -11,62 +12,16 @@ import homeIcon from '../../assets/home.svg';
 import gridPenIcon from '../../assets/grid_pen.svg';
 import controlPanelIcon from '../../assets/control_panel.svg';
 
-// --- COMPONENT CON CHO CÁC ICON ĐIỀU HƯỚNG DESKTOP ---
-function NavLink({ to, title, children }: { to: string; title: string; children: React.ReactNode }) {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-
-  return (
-    <Link to={to} title={title} className={`relative px-3 py-2 transition-colors ${isActive ? '' : 'hover:text-sky-300'}`}>
-      {children}
-      {isActive && (
-        <motion.div
-          className="absolute inset-0 bg-sky-500 rounded-md z-0"
-          layoutId="active-nav-link"
-          transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-        />
-      )}
-    </Link>
-  );
-}
 
 function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  const handleLogout = () => {
-    logout();
-    setIsMenuOpen(false); // đóng menu khi logout
-    navigate('/login');
-  };
-
-  // Click ra ngoài menu thì đóng
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Reset menu về false mỗi khi user thay đổi (login/logout)
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [user]);
-  
-  // Biến chứa các lớp CSS chung cho link trong dropdown
-  const dropdownLinkClasses = "w-full text-left px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-3";
+  const {
+    isMenuOpen,
+    dropdownLinkClasses,
+    user,
+    menuRef,
+    toggleMenu,
+    handleLogout,
+  } = useHeader();
 
   return (
     <header className="fixed top-0 left-0 w-full h-[70px] bg-[#064469] z-50 flex items-center justify-between px-6 shadow-lg">
