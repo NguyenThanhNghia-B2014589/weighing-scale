@@ -51,7 +51,7 @@ function WeighingStationNew() {
       )}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Title Row */}
-        
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">Trạm Cân</h1>
 
         {/* --- KHU VỰC "WEIGHT + STATS" --- */}
         <section className="flex flex-col lg:flex-row gap-5 mb-6">

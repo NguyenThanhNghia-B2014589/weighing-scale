@@ -78,7 +78,7 @@ function Header() {
                         <img src={gridPenIcon} alt="Lịch sử" className="h-5 w-5 filters invert" />
                         Lịch Sử Cân
                       </Link>
-                      <Link to="/settings" className={dropdownLinkClasses} onClick={toggleMenu}>
+                      <Link to="/dashboard" className={dropdownLinkClasses} onClick={toggleMenu}>
                         <img src={controlPanelIcon} alt="Dashboard" className="h-5 w-5 filters invert" />
                         Dashboard
                       </Link>

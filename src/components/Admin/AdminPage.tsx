@@ -52,7 +52,7 @@ function AdminPage() {
   return (
     <div className="flex flex-col h-full">
       {/* --- THANH ĐIỀU KHIỂN MỚI --- */}
-      <div className="bg-sky-200 p-3 shadow border-t-2 border-b-2 border-blue-900/80">
+      <div className="bg-sky-200 p-3 shadow border-b-2 border-blue-900/80">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 ">
           <h1 className="text-xl lg:text-2xl font-bold text-blue-900 flex-shrink-0">
             Trang Quản Trị - Lịch Sử Cân
