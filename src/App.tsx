@@ -11,6 +11,7 @@ import DashboardPage from './components/DashBoard/DashBoard';
 import AdminPage from './components/Admin/AdminPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
+import NotFoundPage from './components/404/NotFoundPage';
 
 
 function App() {
@@ -67,8 +68,11 @@ function App() {
             }>  
           </Route>
           
-          {/* Tuyến đường mặc định vẫn giữ nguyên */}
+          {/* Tuyến đường mặc định */}
           <Route path="/" element={<Navigate to="/WeighingStationNew" replace />} />
+
+          {/* 2. TUYẾN ĐƯỜNG CATCH-ALL đặt ở cuối cùng */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
     </div>
