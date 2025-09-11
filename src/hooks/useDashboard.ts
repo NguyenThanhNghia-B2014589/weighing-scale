@@ -1,8 +1,8 @@
-import {mockApiData} from "../data/weighingData";
+import {mockApiRandomData} from "../data/weighingData";
 import {useMemo} from "react";
 
 export function useDashboard () {
-    const weighingHistory = useMemo(() => Object.values(mockApiData), []);
+    const weighingHistory = useMemo(() => Object.values(mockApiRandomData), []);
 
 // --- LOGIC XỬ LÝ DỮ LIỆU CHO BIỂU ĐỒ ---
 
@@ -31,7 +31,7 @@ export function useDashboard () {
         // Nhóm các bản ghi theo tháng/năm
         const monthlyCounts = weighingHistory.reduce((acc, item) => {
             const datePart = item.time.split(' ')[1]; // Lấy phần "01/01/2024"
-            const [day, month, year] = datePart.split('/');
+            const [ , month, year] = datePart.split('/');
             const monthYear = `${month}/${year}`; // Tạo key là "Tháng/Năm"
 
             acc[monthYear] = (acc[monthYear] || 0) + 1;
