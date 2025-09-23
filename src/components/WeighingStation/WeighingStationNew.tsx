@@ -41,8 +41,7 @@ function WeighingStationNew() {
   }
 
   return (
-    <div className=" lg:scale-125 lg:pt-[70px]">
-      <div className="bg-sky text-slate-800 ">
+      <div className="bg-sky text-slate-800 max-w-auto mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <Notification 
           message={notificationMessage}
           type={notificationType}
@@ -50,9 +49,9 @@ function WeighingStationNew() {
         
         {/* Lớp phủ màu đen và logic vô hiệu hóa UI */}
         {isUiDisabled && (
-          <div className="fixed inset-0 lg:scale-125 bg-black bg-opacity-25 z-40"></div>
+          <div className="fixed inset-0 lg:scale-125 bg-black bg-opacity-25 z-40 "></div>
         )}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
           {/* Title Row */}
           <h1 className="text-3xl font-bold mb-6 text-gray-800">Trạm Cân</h1>
 
@@ -67,9 +66,9 @@ function WeighingStationNew() {
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                      <p className="text-sm font-medium text-slate-500">Trọng lượng hiện tại</p>
+                      <p className="text-s font-medium text-slate-500">Trọng lượng hiện tại</p>
                       <div className="mt-1 flex items-end gap-3">
-                        <span className={`text-5xl sm:text-6xl font-black tabular-nums leading-none ${
+                        <span className={`text-6xl sm:text-6xl font-black tabular-nums leading-none ${
                           currentWeight !== null && tableData ? (isWeightValid ? 'text-emerald-500' : 'text-rose-500') : 'text-slate-800'
                         }`}>
                           {(currentWeight ?? 0).toFixed(1)}
@@ -179,9 +178,7 @@ function WeighingStationNew() {
               </button>
             </div>
           </section>
-        </main>
       </div>
-    </div>
   );
 }
 

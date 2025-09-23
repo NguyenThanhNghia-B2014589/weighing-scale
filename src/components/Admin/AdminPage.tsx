@@ -54,12 +54,12 @@ function AdminPage() {
       {/* --- THANH ĐIỀU KHIỂN MỚI --- */}
       <div className="bg-sky-200 p-3 shadow border-b-2 border-blue-900/80">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 ">
-          <h1 className="text-xl lg:text-2xl font-bold text-blue-900 flex-shrink-0">
+          <h1 className="text-xl lg:text-2xl font-bold text-blue-900 flex-shrink-0 px-5">
             Trang Quản Trị - Lịch Sử Cân
           </h1>
           
           {/* Nhóm các bộ lọc và tìm kiếm */}
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="flex items-center gap-2 w-full md:w-auto pr-5">
             {/* Tên phôi keo Dropdown */}
             <select
               value={selectedName}
@@ -111,7 +111,7 @@ function AdminPage() {
       </div>
 
       {/* List */}
-      <div className="mt-4 flex-1 min-h-screen">
+      <div className="mt-4 flex-1 min-h-screen px-6">
         {filteredHistory.length > 0 ? (
           <AutoSizer>
             {({ height, width }) => (

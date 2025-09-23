@@ -13,8 +13,8 @@ const SkeletonStatCard = () => (
 function WeighingStationSkeleton() {
   return (
     // animate-pulse sẽ tạo hiệu ứng nhấp nháy cho tất cả các phần tử con
-    <div className="lg:scale-125 lg:pt-[70px] bg-sky-200 text-slate-800">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className=" bg-sky-200 text-slate-800">
+      <main className="max-w-auto mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Title Row Skeleton */}
         <h1 className="text-3xl font-bold mb-6 text-gray-800">Trạm Cân</h1>
 
@@ -63,7 +63,7 @@ function WeighingStationSkeleton() {
         <section className="rounded-xl bg-gray-200 shadow-md p-5 sm:p-6">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="h-12 flex-1 bg-gray-300 rounded-xl"></div>
-            <div className="h-12 w-full px-20 sm:w-auto bg-gray-300 rounded-xl px-6"></div>
+            <div className="h-12 w-full px-20 sm:w-auto bg-gray-300 rounded-xl"></div>
           </div>
         </section>
       </main>
