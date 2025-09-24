@@ -16,12 +16,19 @@ function DashboardPage() {
     // Refresh functionality
     refreshData,
     formatLastRefresh,
+    isAutoRefresh,
+    setIsAutoRefresh,
   } = useDashboard();
   
   return (
     <div className="px-8 py-4">
       {/* Settings Modal - sử dụng component riêng biệt */}
-      <SettingsModal />
+      <SettingsModal 
+        isAutoRefresh={isAutoRefresh}
+        setIsAutoRefresh={setIsAutoRefresh}
+        refreshData={refreshData}
+        formatLastRefresh={formatLastRefresh}
+      />
 
       {/* HEADER ĐƯỢC ĐƠN GIẢN HÓA */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">

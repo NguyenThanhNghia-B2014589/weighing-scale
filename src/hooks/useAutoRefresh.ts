@@ -1,6 +1,6 @@
 // src/hooks/useAutoRefresh.ts
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseAutoRefreshOptions {
   defaultInterval?: number; // Khoảng thời gian làm mới mặc định (giây)
@@ -35,6 +35,14 @@ export function useAutoRefresh(
   const [isAutoRefresh, setIsAutoRefresh] = useState(autoStart);
   const [refreshInterval, setRefreshInterval] = useState(defaultInterval);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+
+    // 1. SỬ DỤNG REF ĐỂ LƯU PHIÊN BẢN MỚI NHẤT CỦA CALLBACK
+  const savedCallback = useRef(dataRefreshCallback);
+
+  // 2. CẬP NHẬT REF MỖI KHI CALLBACK THAY ĐỔI
+  useEffect(() => {
+    savedCallback.current = dataRefreshCallback;
+  }, [dataRefreshCallback]);
 
   // Hàm làm mới dữ liệu thủ công
   const refreshData = useCallback(() => {

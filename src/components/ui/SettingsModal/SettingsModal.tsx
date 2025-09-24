@@ -2,19 +2,25 @@
 
 import React from 'react';
 import { useSettings } from '../../../hooks/useSettings';
-import { useDashboard } from '../../../hooks/useDashboard';
 
-function SettingsModal() {
+// Định nghĩa props mà component này sẽ nhận từ cha
+interface SettingsModalProps {
+  isAutoRefresh: boolean;
+  setIsAutoRefresh: (enabled: boolean) => void;
+  refreshData: () => void;
+  formatLastRefresh: () => string;
+}
+
+// Component nhận props
+function SettingsModal({
+  isAutoRefresh,
+  setIsAutoRefresh,
+  refreshData,
+  formatLastRefresh,
+}: SettingsModalProps) {
   const { showSettingsModal, closeSettingsModal } = useSettings();
-  const {
-    isAutoRefresh,
-    setIsAutoRefresh,
-    refreshData,
-    formatLastRefresh,
-  } = useDashboard();
 
   if (!showSettingsModal) return null;
-
   return (
     <>
       {/* Overlay */}

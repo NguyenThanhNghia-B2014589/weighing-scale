@@ -1,7 +1,7 @@
 // src/hooks/useDashboard.ts
 
 import { mockApiRandomData } from "../data/weighingData";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, } from "react";
 import { useAutoRefresh } from "./useAutoRefresh";
 
 function getTodayString(): string {
@@ -18,9 +18,17 @@ export function useDashboard() {
     const [selectedDate, setSelectedDate] = useState(getTodayString());
 
     // Callback để làm mới dữ liệu
-    const dataRefreshCallback = useCallback(() => {
-        setWeighingHistory(Object.values(mockApiRandomData));
-    }, []);
+    const dataRefreshCallback = () => {
+        // Gọi API hoặc hàm lấy dữ liệu mới ở đây
+        const newData = Object.values(mockApiRandomData);
+        // Sử dụng functional update
+        setWeighingHistory(currentHistory => {
+        // Logic này đảm bảo rằng chúng ta chỉ cập nhật nếu dữ liệu thực sự thay đổi
+        // (Trong trường hợp API thật, điều này rất hữu ích)
+        // Với dữ liệu giả, chúng ta có thể chỉ cần return newData
+        return newData;
+        });
+    };
 
     // Sử dụng hook useAutoRefresh
     const {
@@ -31,10 +39,7 @@ export function useDashboard() {
         setIsAutoRefresh,
         setRefreshInterval,
         formatLastRefresh,
-    } = useAutoRefresh(dataRefreshCallback, {
-        defaultInterval: 300, // 5 phút
-        autoStart: true
-    });
+    } = useAutoRefresh(dataRefreshCallback, { }); // Sử dụng giá trị mặc định trong useAutoRefresh.ts
 
     // --- LOGIC XỬ LÝ DỮ LIỆU CHO BIỂU ĐỒ ---
 

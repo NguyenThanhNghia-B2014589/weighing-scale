@@ -1,7 +1,6 @@
 // src/App.tsx
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { SettingsProvider } from './context/SettingsContext';
 
 // Import Header và các trang
 import Header from './components/ui/Header';
@@ -17,7 +16,6 @@ import NotFoundPage from './components/404/NotFoundPage';
 function App() {
   return (
     // Wrap toàn bộ app với SettingsProvider
-    <SettingsProvider>
       <div className="min-h-screen bg-sky-200 flex flex-col">
         <Header />
         
@@ -77,7 +75,6 @@ function App() {
           </Routes>
         </main>
       </div>
-    </SettingsProvider>
   );
 }
 
