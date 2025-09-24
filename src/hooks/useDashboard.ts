@@ -1,22 +1,52 @@
 import {mockApiRandomData} from "../data/weighingData";
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
+
+function getTodayString(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
 export function useDashboard () {
     const weighingHistory = useMemo(() => Object.values(mockApiRandomData), []);
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
 
 // --- LOGIC XỬ LÝ DỮ LIỆU CHO BIỂU ĐỒ ---
 
-// 1. Dữ liệu cho biểu đồ cột: Đếm số lần cân của mỗi người dùng
-    const userPerformanceData = useMemo(() => {
-        const userCounts = weighingHistory.reduce((acc, item) => {
-            acc[item.user] = (acc[item.user] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>);
+// 2. Dữ liệu cho biểu đồ cột: Tính tổng khối lượng cân theo từng khung giờ
+  const hourlyWeighingData = useMemo(() => {
+    // 1. Lọc dữ liệu theo ngày đã chọn
+    const dailyData = weighingHistory.filter(item => {
+      // Chuyển đổi "09:35 15/06/2025" thành một đối tượng Date để so sánh
+      const [, dateStr] = item.time.split(' ');
+      const [day, month, year] = dateStr.split('/');
+      const itemDate = new Date(`${year}-${month}-${day}`);
+      
+      return itemDate.toDateString() === new Date(selectedDate).toDateString();
+    });
 
-        return Object.entries(userCounts).map(([name, count]) => ({name, 'Số lần cân': count}));
-    }, [weighingHistory]);
+    // 2. Nhóm dữ liệu đã lọc theo giờ và tính tổng khối lượng
+    const hourlyTotals = dailyData.reduce((acc, item) => {
+      const [hour] = item.time.split(':'); // Lấy giờ từ "09:35"
+      const hourKey = `${hour}:00`;
 
-// 2. Dữ liệu cho biểu đồ tròn: Đếm số lần cân của mỗi loại phôi keo
+      acc[hourKey] = (acc[hourKey] || 0) + item.finalWeight;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // 3. Tạo dữ liệu cho biểu đồ, đảm bảo có đủ các giờ trong ngày làm việc
+    const workHours = Array.from({ length: 11 }, (_, i) => `${String(i + 7).padStart(2, '0')}:00`); // 07:00 -> 17:00
+    
+    return workHours.map(hour => ({
+      hour,
+      'Tổng khối lượng': hourlyTotals[hour] || 0,
+    }));
+
+  }, [weighingHistory, selectedDate]);
+
+// 3. Dữ liệu cho biểu đồ tròn: Đếm số lần cân của mỗi loại phôi keo
     const glueTypeData = useMemo(() => {
         const glueCounts = weighingHistory.reduce((acc, item) => {
             acc[item.name] = (acc[item.name] || 0) + 1;
@@ -26,7 +56,7 @@ export function useDashboard () {
         return Object.entries(glueCounts).map(([name, value]) => ({name, value}));
     }, [weighingHistory]);
 
-// 3. DỮ LIỆU MỚI: Xu hướng số lần cân theo thời gian
+// 1. DỮ LIỆU MỚI: Xu hướng số lần cân theo thời gian
     const weighingTrendData = useMemo(() => {
         // Nhóm các bản ghi theo tháng/năm
         const monthlyCounts = weighingHistory.reduce((acc, item) => {
@@ -51,7 +81,9 @@ export function useDashboard () {
     const COLORS = ['#0088FE', '#B93992FF', '#00C49F', '#FFBB28', '#FF8042'];
 
     return {
-        userPerformanceData,
+        setSelectedDate,
+        selectedDate,
+        hourlyWeighingData,
         glueTypeData,
         weighingTrendData,
         COLORS,
