@@ -1,6 +1,7 @@
 // src/App.tsx
 
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { SettingsProvider } from './context/SettingsContext';
 
 // Import Header và các trang
 import Header from './components/ui/Header';
@@ -13,69 +14,70 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 import NotFoundPage from './components/404/NotFoundPage';
 
-
 function App() {
   return (
-    // Cấu trúc layout và CSS của bạn được giữ nguyên
-    <div className="min-h-screen bg-sky-200 flex flex-col">
-      <Header />
-      
-      <main className="flex-grow pt-[70px]">
-        <Routes>
-          {/* Trang Login không cần bảo vệ */}
-          <Route 
-            path="/login" 
-            element={
-                <LoginPage />
-            } 
-          />
-          
-          {/* BỌC TUYẾN ĐƯỜNG WeighingStation BẰNG ProtectedRoute */}
-          <Route 
-            path="/WeighingStation" 
-            element={
-              <ProtectedRoute>
-                <WeighingStation />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/WeighingStationNew" 
-            element={
-              <ProtectedRoute>
-                <WeighingStationNew />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* BỌC TUYẾN ĐƯỜNG AdminPage BẰNG ProtectedRoute */}
-          <Route 
-            path="/admin" 
-            element={
-              <AdminProtectedRoute>
-                <AdminPage />
-              </AdminProtectedRoute>
-            }>  
-          </Route>
+    // Wrap toàn bộ app với SettingsProvider
+    <SettingsProvider>
+      <div className="min-h-screen bg-sky-200 flex flex-col">
+        <Header />
+        
+        <main className="flex-grow pt-[70px]">
+          <Routes>
+            {/* Trang Login không cần bảo vệ */}
+            <Route 
+              path="/login" 
+              element={
+                  <LoginPage />
+              } 
+            />
+            
+            {/* BỌC TUYẾN ĐƯỜNG WeighingStation BẰNG ProtectedRoute */}
+            <Route 
+              path="/WeighingStation" 
+              element={
+                <ProtectedRoute>
+                  <WeighingStation />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/WeighingStationNew" 
+              element={
+                <ProtectedRoute>
+                  <WeighingStationNew />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* BỌC TUYẾN ĐƯỜNG AdminPage BẰNG ProtectedRoute */}
+            <Route 
+              path="/admin" 
+              element={
+                <AdminProtectedRoute>
+                  <AdminPage />
+                </AdminProtectedRoute>
+              }>  
+            </Route>
 
-          {/* */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <AdminProtectedRoute>
-                <DashboardPage />
-              </AdminProtectedRoute>
-            }>  
-          </Route>
-          
-          {/* Tuyến đường mặc định */}
-          <Route path="/" element={<Navigate to="/WeighingStationNew" replace />} />
+            {/* Dashboard Route */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <AdminProtectedRoute>
+                  <DashboardPage />
+                </AdminProtectedRoute>
+              }>  
+            </Route>
+            
+            {/* Tuyến đường mặc định */}
+            <Route path="/" element={<Navigate to="/WeighingStationNew" replace />} />
 
-          {/* 2. TUYẾN ĐƯỜNG CATCH-ALL đặt ở cuối cùng */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-    </div>
+            {/* 2. TUYẾN ĐƯỜNG CATCH-ALL đặt ở cuối cùng */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+      </div>
+    </SettingsProvider>
   );
 }
 
