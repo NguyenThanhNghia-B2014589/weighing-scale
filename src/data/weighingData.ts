@@ -263,10 +263,10 @@ function getRandomItem<T>(arr: T[]): T {
 
 // Hàm tiện ích để tạo ngày/giờ ngẫu nhiên
 function getRandomTime(): string {
-  const year = 2024;
-  const month = Math.floor(Math.random() * 12) + 1;
+  const year = 2025;
+  const month = Math.floor(Math.random() * 9) + 1;
   const day = Math.floor(Math.random() * 28) + 1; // Giới hạn 28 để tránh lỗi
-  const hour = Math.floor(Math.random() * 24);
+  const hour = Math.floor(Math.random() * 11) + 7;
   const minute = Math.floor(Math.random() * 60);
 
   const formattedHour = hour.toString().padStart(2, '0');
@@ -291,7 +291,7 @@ export type WeighingDataRandom = {
 
 export const mockApiRandomData: Record<string, WeighingDataRandom> = {};
 
-const numberOfRecords = 100;
+const numberOfRecords = 11111;
 
 for (let i = 1; i <= numberOfRecords; i++) {
   // Tạo ngẫu nhiên các giá trị từ các mảng đã định nghĩa ở trên
