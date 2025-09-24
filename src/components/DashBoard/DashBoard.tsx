@@ -1,4 +1,4 @@
-// src/components/DashboardPage/DashboardPage.tsx
+// src/components/DashBoard/DashBoard.tsx
 
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
@@ -16,19 +16,10 @@ function DashboardPage() {
     refreshData,
     isAutoRefresh,
     setIsAutoRefresh,
-    lastRefresh,
+    formatLastRefresh, // Sử dụng hàm format từ hook
   } = useDashboard();
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-
-  // Hàm format thời gian hiển thị
-  const formatLastRefresh = (date: Date) => {
-    return date.toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
   
   return (
     <div className="px-8 py-4">
@@ -39,7 +30,7 @@ function DashboardPage() {
         <div className="flex items-center gap-3 mt-4 sm:mt-0">
           {/* Thông tin refresh cuối */}
           <span className="text-sm text-gray-500">
-            Cập nhật lần cuối: {formatLastRefresh(lastRefresh)}
+            Cập nhật lần cuối: {formatLastRefresh()}
           </span>
           
           {/* Nút refresh thủ công */}
@@ -149,7 +140,7 @@ function DashboardPage() {
                     )}
                   </div>
                   <p className="text-sm text-gray-500">
-                    Lần cập nhật cuối: {formatLastRefresh(lastRefresh)}
+                    Lần cập nhật cuối: {formatLastRefresh()}
                   </p>
                 </div>
               </div>

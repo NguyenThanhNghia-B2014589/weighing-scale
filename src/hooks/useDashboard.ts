@@ -1,5 +1,8 @@
-import {mockApiRandomData} from "../data/weighingData";
-import {useMemo, useState, useEffect, useCallback} from "react";
+// src/hooks/useDashboard.ts
+
+import { mockApiRandomData } from "../data/weighingData";
+import { useMemo, useState, useCallback } from "react";
+import { useAutoRefresh } from "./useAutoRefresh";
 
 function getTodayString(): string {
     const today = new Date();
@@ -9,30 +12,29 @@ function getTodayString(): string {
     return `${year}-${month}-${day}`;
 }
 
-export function useDashboard () {
-    // State cho dữ liệu và refresh
+export function useDashboard() {
+    // State cho dữ liệu dashboard
     const [weighingHistory, setWeighingHistory] = useState(() => Object.values(mockApiRandomData));
-    const [isAutoRefresh, setIsAutoRefresh] = useState(true);
-    const [refreshInterval, setRefreshInterval] = useState(300); // giây (5 phút mặc định)
-    const [lastRefresh, setLastRefresh] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(getTodayString());
 
-    // Hàm làm mới dữ liệu thủ công
-    const refreshData = useCallback(() => {
+    // Callback để làm mới dữ liệu
+    const dataRefreshCallback = useCallback(() => {
         setWeighingHistory(Object.values(mockApiRandomData));
-        setLastRefresh(new Date());
     }, []);
 
-    // Auto refresh effect
-    useEffect(() => {
-        if (!isAutoRefresh) return;
-
-        const interval = setInterval(() => {
-            refreshData();
-        }, refreshInterval * 1000);
-
-        return () => clearInterval(interval);
-    }, [isAutoRefresh, refreshInterval, refreshData]);
+    // Sử dụng hook useAutoRefresh
+    const {
+        isAutoRefresh,
+        refreshInterval,
+        lastRefresh,
+        refreshData,
+        setIsAutoRefresh,
+        setRefreshInterval,
+        formatLastRefresh,
+    } = useAutoRefresh(dataRefreshCallback, {
+        defaultInterval: 300, // 5 phút
+        autoStart: true
+    });
 
     // --- LOGIC XỬ LÝ DỮ LIỆU CHO BIỂU ĐỒ ---
 
@@ -82,7 +84,7 @@ export function useDashboard () {
         // Nhóm các bản ghi theo tháng/năm
         const monthlyCounts = weighingHistory.reduce((acc, item) => {
             const datePart = item.time.split(' ')[1]; // Lấy phần "01/01/2024"
-            const [ , month, year] = datePart.split('/');
+            const [, month, year] = datePart.split('/');
             const monthYear = `${month}/${year}`; // Tạo key là "Tháng/Năm"
 
             acc[monthYear] = (acc[monthYear] || 0) + 1;
@@ -102,7 +104,7 @@ export function useDashboard () {
     const COLORS = ['#0088FE', '#B93992FF', '#00C49F', '#FFBB28', '#FF8042'];
 
     return {
-        // Dữ liệu gốc
+        // Dữ liệu dashboard
         setSelectedDate,
         selectedDate,
         hourlyWeighingData,
@@ -110,12 +112,13 @@ export function useDashboard () {
         weighingTrendData,
         COLORS,
         
-        // Refresh functionality
+        // Refresh functionality từ useAutoRefresh hook
         refreshData,
         isAutoRefresh,
         setIsAutoRefresh,
         refreshInterval,
         setRefreshInterval,
         lastRefresh,
+        formatLastRefresh,
     };
 }
