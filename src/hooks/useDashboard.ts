@@ -22,7 +22,7 @@ export function useDashboard() {
         // Gọi API hoặc hàm lấy dữ liệu mới ở đây
         const newData = Object.values(mockApiRandomData);
         // Sử dụng functional update
-        setWeighingHistory(currentHistory => {
+        setWeighingHistory(() => {
         // Logic này đảm bảo rằng chúng ta chỉ cập nhật nếu dữ liệu thực sự thay đổi
         // (Trong trường hợp API thật, điều này rất hữu ích)
         // Với dữ liệu giả, chúng ta có thể chỉ cần return newData

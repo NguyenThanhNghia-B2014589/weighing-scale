@@ -3,7 +3,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { useDashboard } from '../../hooks/useDashboard';
-import SettingsModal from '../ui/SettingsModal/SettingsModal';
+
 
 function DashboardPage() {
   const {
@@ -16,20 +16,10 @@ function DashboardPage() {
     // Refresh functionality
     refreshData,
     formatLastRefresh,
-    isAutoRefresh,
-    setIsAutoRefresh,
   } = useDashboard();
   
   return (
     <div className="px-8 py-4">
-      {/* Settings Modal - sử dụng component riêng biệt */}
-      <SettingsModal 
-        isAutoRefresh={isAutoRefresh}
-        setIsAutoRefresh={setIsAutoRefresh}
-        refreshData={refreshData}
-        formatLastRefresh={formatLastRefresh}
-      />
-
       {/* HEADER ĐƯỢC ĐƠN GIẢN HÓA */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard - Tổng Quan</h1>
