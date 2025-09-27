@@ -36,19 +36,18 @@ export function useAutoRefresh(
   const [refreshInterval, setRefreshInterval] = useState(defaultInterval);
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-    // 1. SỬ DỤNG REF ĐỂ LƯU PHIÊN BẢN MỚI NHẤT CỦA CALLBACK
-  const savedCallback = useRef(dataRefreshCallback);
-
-  // 2. CẬP NHẬT REF MỖI KHI CALLBACK THAY ĐỔI
+  // ref lưu phiên bản mới nhất của callback (tránh stale closures)
+  const savedCallback = useRef<() => void>(() => {});
   useEffect(() => {
     savedCallback.current = dataRefreshCallback;
   }, [dataRefreshCallback]);
 
-  // Hàm làm mới dữ liệu thủ công
+  // refreshData sẽ luôn gọi savedCallback.current() (phiên bản mới nhất)
   const refreshData = useCallback(() => {
-    dataRefreshCallback();
+    // gọi callback mới nhất
+    savedCallback.current();
     setLastRefresh(new Date());
-  }, [dataRefreshCallback]);
+  }, []);
 
   // Hàm format thời gian hiển thị
   const formatLastRefresh = useCallback((date: Date = lastRefresh) => {
@@ -64,6 +63,7 @@ export function useAutoRefresh(
     if (!isAutoRefresh) return;
 
     const interval = setInterval(() => {
+      // Gọi refreshData (nó sẽ dùng savedCallback.current())
       refreshData();
     }, refreshInterval * 1000);
 
